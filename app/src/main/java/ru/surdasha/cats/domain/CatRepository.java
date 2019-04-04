@@ -7,7 +7,7 @@ import io.reactivex.Maybe;
 import ru.surdasha.cats.domain.models.Cat;
 
 public interface CatRepository {
-    Completable deleteCat(int id);
+    Completable deleteCat(Cat cat);
 
     Completable addCat(Cat cat);
 

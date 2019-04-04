@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 import ru.surdasha.cats.data.CatsRepositoryImpl;
+import ru.surdasha.cats.data.db.CatDao;
+import ru.surdasha.cats.data.db.DbSource;
 import ru.surdasha.cats.data.mappers.CatMapper;
 import ru.surdasha.cats.data.remote.CatRemoteInterface;
 import ru.surdasha.cats.data.remote.NetworkSource;
@@ -49,8 +51,9 @@ public class CatMainModule {
     @NonNull
     @Singleton
     @Provides
-    CatRepository provideCatRepository(@NonNull NetworkSource networkSource, CatMapper catMapper) {
-        return new CatsRepositoryImpl(networkSource, catMapper);
+    CatRepository provideCatRepository(@NonNull NetworkSource networkSource, CatMapper catMapper,
+                                       DbSource dbSource) {
+        return new CatsRepositoryImpl(networkSource, catMapper, dbSource);
     }
 
     @NonNull
@@ -72,5 +75,12 @@ public class CatMainModule {
     @Provides
     NetworkSource provideNetworkSource(CatRemoteInterface catRemoteInterface) {
         return new NetworkSource(catRemoteInterface);
+    }
+
+    @NonNull
+    @Singleton
+    @Provides
+    DbSource provideDbSource(CatDao catDao) {
+        return new DbSource(catDao);
     }
 }

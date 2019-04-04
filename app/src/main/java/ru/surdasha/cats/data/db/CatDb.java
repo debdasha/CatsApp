@@ -12,6 +12,10 @@ public class CatDb {
     private String url;
     @ColumnInfo(name = "serverId")
     private String serverId;
+    @ColumnInfo(name = "imageHeight")
+    private int imageHeight;
+    @ColumnInfo(name = "imageWidth")
+    private int imageWidth;
 
     public void setId(long id) {
         this.id = id;
@@ -23,5 +27,33 @@ public class CatDb {
 
     public void setServerId(String serverId) {
         this.serverId = serverId;
+    }
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
+    }
+
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
     }
 }

@@ -19,8 +19,8 @@ public interface CatDao {
     Maybe<CatDb> getByServerId(String serverId);
 
     @Delete
-    Completable delete(long catId);
+    Completable delete(CatDb catDb);
 
     @Insert
-    Completable add(Cat cat);
+    Completable add(CatDb cat);
 }

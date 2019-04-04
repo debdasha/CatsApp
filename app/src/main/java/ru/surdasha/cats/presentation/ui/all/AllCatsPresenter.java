@@ -30,7 +30,7 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
     private PublishProcessor<Integer> scrollProcessor = PublishProcessor.create();
 
     private final int DEFAULT_PAGE = 1;
-    private int pageNumber = DEFAULT_PAGE ;
+    private int pageNumber = DEFAULT_PAGE;
     private final static int SCROLL_THRESHOLD = 2;
 
     private volatile boolean loading;
@@ -40,8 +40,40 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
         compositeDisposable = new CompositeDisposable();
     }
 
-    public void getCats(){
-        getViewState().onShowLoading();
+    public void getFirstCats() {
+        getViewState().onStartFirstLoading();
+        loading = true;
+        Disposable disposable = getCatsUseCase.getCats(DEFAULT_PAGE)
+                .flattenAsObservable(cats -> cats)
+                .map(cat -> catUIMapper.domainToUI(cat))
+                .toList()
+                .toMaybe()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(cats -> {
+                    loading = false;
+                    getViewState().onEndFirstLoading();
+                    if (cats.isEmpty()) {
+                        getViewState().onEmptyList();
+                    } else {
+                        getViewState().onSuccessLoading(cats);
+                    }
+                }, throwable -> {
+                    loading = false;
+                    getViewState().onEndFirstLoading();
+                    getViewState().onErrorFirstLoading();
+                }, () -> {
+                    loading = false;
+                    getViewState().onEndFirstLoading();
+                    getViewState().onEmptyList();
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    public void refreshCats() {
+        unsubscribe();
+        getViewState().onStartRefreshing();
+        loading = true;
         Disposable disposable = getCatsUseCase.getCats(DEFAULT_PAGE)
                 .flattenAsObservable(cats -> cats)
                 .map(cat -> catUIMapper.domainToUI(cat))
@@ -52,18 +84,43 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cats -> {
-                    getViewState().onHideLoad();
-                    if (cats.isEmpty()){
-                        getViewState().onEmptyList();
-                    }else{
-                        getViewState().onShowCats(cats);
-                    }
-                },throwable -> {
-                    getViewState().onHideLoad();
-                    getViewState().onShowError();
+                    getViewState().onEndRefreshing();
+                    pageNumber = 1;
+                    loading = false;
+                    getViewState().onSuccessLoading(cats);
+                    subscribeToNextCats();
+                }, throwable -> {
+                    loading = false;
+                    subscribeToNextCats();
+                    getViewState().onEndRefreshing();
+                    getViewState().onErrorRefreshing();
                 }, () -> {
-                    getViewState().onHideLoad();
-                    getViewState().onEmptyList();
+                    loading = false;
+                    getViewState().onEndRefreshing();
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    public void subscribeToNextCats() {
+        Disposable disposable = scrollProcessor
+                .onBackpressureDrop()
+                .concatMap(page -> {
+                    loading = true;
+                    getViewState().onStartNextLoading();
+                    return getCatsUseCase.getCats(page)
+                            .subscribeOn(Schedulers.io())
+                            .toFlowable();
+                })
+                .toObservable()
+                .map(cat -> catUIMapper.domainToUI(cat))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(cats -> {
+                    getViewState().onEndNextLoading();
+                    getViewState().onSuccessNextLoading(cats);
+                    loading = false;
+                }, throwable -> {
+                    getViewState().onEndNextLoading();
+                    getViewState().onErrorNextLoading();
                 });
         compositeDisposable.add(disposable);
     }
@@ -76,20 +133,20 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
         }
     }
 
-    public void addToFavorite(CatUI catUI){
+    public void addToFavorite(CatUI catUI) {
         addCatUseCase.addCat(catUIMapper.uiToDomain(catUI))
                 .subscribe(() -> {
 
                 }, throwable -> {
-                    getViewState().onShowErrorSaving();
+                    getViewState().onErrorAddToFavorites();
                 });
     }
 
-    public void downloadImage(CatUI catUI){
+    public void downloadImage(CatUI catUI) {
 
     }
 
-    public void unsubscribe(){
+    public void unsubscribe() {
         compositeDisposable.clear();
     }
 }

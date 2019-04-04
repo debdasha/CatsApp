@@ -70,7 +70,7 @@ public class AllCatsAdapter extends
         private void showWithGlide(Context context, CatUI model) {
             GlideApp.with(context)
                     .load(model.getUrl())
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .placeholder(getCircularProgressDrawable(context))
                     .apply(RequestOptions.bitmapTransform(new RoundedCorners(10)))
                     .into(ivCat);
@@ -129,6 +129,11 @@ public class AllCatsAdapter extends
 
     public void refreshData(@NonNull List<CatUI> newData) {
         cats.clear();
+        cats.addAll(newData);
+        notifyDataSetChanged();
+    }
+
+    public void addData(@NonNull List<CatUI> newData) {
         cats.addAll(newData);
         notifyDataSetChanged();
     }

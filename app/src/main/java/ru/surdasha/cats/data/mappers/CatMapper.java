@@ -20,6 +20,18 @@ public class CatMapper {
         catDb.setId(cat.getId());
         catDb.setServerId(cat.getServerId());
         catDb.setUrl(cat.getUrl());
+        catDb.setImageHeight(cat.getImageHeight());
+        catDb.setImageWidth(cat.getImageWidth());
         return catDb;
+    }
+
+    public Cat dbToDomain(CatDb catDb){
+        Cat cat = new Cat();
+        cat.setId(catDb.getId());
+        cat.setServerId(catDb.getServerId());
+        cat.setUrl(catDb.getUrl());
+        cat.setImageHeight(catDb.getImageHeight());
+        cat.setImageWidth(catDb.getImageWidth());
+        return cat;
     }
 }

@@ -23,7 +23,7 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
     @BindView(R.id.rvCats)
     RecyclerView rvCats;
     @InjectPresenter
-    AllCatsPresenter allCatsPresenter;
+    FavoriteCatsPresenter allCatsPresenter;
     AllCatsAdapter allCatsAdapter;
     @BindView(R.id.groupCats)
     Group groupCats;

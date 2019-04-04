@@ -7,7 +7,6 @@ import javax.inject.Singleton;
 import androidx.room.Room;
 import dagger.Module;
 import dagger.Provides;
-import ru.surdasha.cats.CatApp;
 import ru.surdasha.cats.data.db.CatDatabase;
 
 @Module

@@ -10,6 +10,8 @@ public class CatMapper {
         Cat cat = new Cat();
         cat.setServerId(catRemote.getId());
         cat.setUrl(catRemote.getUrl());
+        cat.setImageHeight(catRemote.getImageHeight());
+        cat.setImageWidth(catRemote.getImageWidth());
         return cat;
     }
 

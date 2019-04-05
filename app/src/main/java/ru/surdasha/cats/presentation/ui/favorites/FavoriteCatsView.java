@@ -19,8 +19,14 @@ public interface FavoriteCatsView extends MvpView {
     void onHideLoad();
 
     @StateStrategyType(AddToEndStrategy.class)
-    void onShowError();
+    void onShowErrorLoading();
 
     @StateStrategyType(AddToEndStrategy.class)
     void onEmptyList();
+
+    @StateStrategyType(AddToEndStrategy.class)
+    void onShowErrorDeleting();
+
+    @StateStrategyType(AddToEndStrategy.class)
+    void onShowSuccessDeleting();
 }

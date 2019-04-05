@@ -10,6 +10,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ru.surdasha.cats.CatApp;
+import ru.surdasha.cats.domain.usecases.DeleteCatUseCase;
 import ru.surdasha.cats.domain.usecases.GetFavoriteCatsUseCase;
 import ru.surdasha.cats.presentation.mappers.CatUIMapper;
 import ru.surdasha.cats.presentation.models.CatUI;
@@ -20,6 +21,8 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
     private final CompositeDisposable compositeDisposable;
     @Inject
     GetFavoriteCatsUseCase getFavoriteCatsUseCase;
+    @Inject
+    DeleteCatUseCase deleteCatUseCase;
     @Inject
     CatUIMapper catUIMapper;
 
@@ -48,7 +51,7 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
                     }
                 },throwable -> {
                     getViewState().onHideLoad();
-                    getViewState().onShowError();
+                    getViewState().onShowErrorLoading();
                 }, () -> {
                     getViewState().onHideLoad();
                     getViewState().onEmptyList();
@@ -57,7 +60,12 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
     }
 
     public void deleteFromFavorite(CatUI catUI){
+        deleteCatUseCase.deleteCat(catUIMapper.uiToDomain(catUI))
+                .subscribe(() -> {
 
+                },throwable -> {
+
+                });
     }
 
     public void unsubscribe(){

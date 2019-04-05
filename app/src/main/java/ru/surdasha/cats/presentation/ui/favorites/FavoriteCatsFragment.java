@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
@@ -65,13 +66,23 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
     }
 
     @Override
-    public void onShowError() {
+    public void onShowErrorLoading() {
         groupError.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onEmptyList() {
         groupEmpty.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onShowErrorDeleting() {
+        Toast.makeText(getActivity(), "Не удалось удалить котика", Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public void onShowSuccessDeleting() {
+
     }
 
     @OnClick(R.id.ibRetry)

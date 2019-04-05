@@ -40,6 +40,10 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
         compositeDisposable = new CompositeDisposable();
     }
 
+    public void loadCats(){
+
+    }
+
     public void getFirstCats() {
         getViewState().onStartFirstLoading();
         loading = true;

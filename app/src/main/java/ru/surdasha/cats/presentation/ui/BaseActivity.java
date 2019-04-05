@@ -1,16 +1,14 @@
 package ru.surdasha.cats.presentation.ui;
 
-
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import androidx.fragment.app.FragmentActivity;
 
-import com.arellomobile.mvp.MvpActivity;
-
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import ru.surdasha.cats.R;
 
 
-public class BaseActivity extends MvpActivity {
+public class BaseActivity extends MVPMoxyActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +16,7 @@ public class BaseActivity extends MvpActivity {
     }
 
     public void addFragment(Fragment fragment, boolean addToBack) {
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
         transaction.add( R.id.container, fragment);
         if (addToBack) {
@@ -27,8 +25,8 @@ public class BaseActivity extends MvpActivity {
         transaction.commit();
     }
 
-    public void showFragment(Fragment fragment, boolean addToBack, int containerId) {
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+    public void showFragment(BaseFragment fragment, boolean addToBack, int containerId) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
         transaction.replace(containerId, fragment);
         if (addToBack) {
@@ -42,7 +40,7 @@ public class BaseActivity extends MvpActivity {
     }
 
     public void showFragmentWithTag(Fragment fragment, boolean addToBack, String tag) {
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
         transaction.replace(R.id.container, fragment, tag);
         if (addToBack) {

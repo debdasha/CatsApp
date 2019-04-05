@@ -9,7 +9,7 @@ import butterknife.Unbinder;
 import ru.surdasha.cats.R;
 
 
-public class BaseFragment extends MvpFragment {
+public class BaseFragment extends MVPMoxyFragment {
     private Unbinder unbinder;
 
     public void bindBaseUI(View view) {

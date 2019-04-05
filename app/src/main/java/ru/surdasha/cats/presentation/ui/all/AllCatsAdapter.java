@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.ButterKnife;
 import ru.surdasha.cats.R;
@@ -79,6 +80,7 @@ public class AllCatsAdapter extends
     }
 
     public void addData(@NonNull List<CatUI> newData) {
+        cats.clear();
         cats.addAll(newData);
         notifyDataSetChanged();
     }

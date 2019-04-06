@@ -1,5 +1,6 @@
 package ru.surdasha.cats.presentation.ui.all;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,18 +22,16 @@ public class AllCatsAdapter extends
         RecyclerView.Adapter<AllCatsViewHolder> {
 
     private static final String TAG = AllCatsAdapter.class.getSimpleName();
-    private Context context;
+    private Activity context;
     @NonNull
     private List<CatUI> cats = new ArrayList<>();
     @NonNull
     private OnLikeClickListener onLikeClickListener;
     @NonNull
     private OnDownloadClickListener onDownloadClickListener;
-    private int width;
 
-    public AllCatsAdapter(Context context, int width) {
+    public AllCatsAdapter(Activity context) {
         this.context = context;
-        this.width = width;
     }
 
 
@@ -44,7 +43,7 @@ public class AllCatsAdapter extends
         View view = inflater.inflate(R.layout.item_cat, parent, false);
         ButterKnife.bind(this, view);
 
-        AllCatsViewHolder allCatsViewHolder = new AllCatsViewHolder(view, width);
+        AllCatsViewHolder allCatsViewHolder = new AllCatsViewHolder(view);
 
         return allCatsViewHolder;
     }

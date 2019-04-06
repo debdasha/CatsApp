@@ -1,7 +1,6 @@
 package ru.surdasha.cats.presentation.ui.all;
 
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.FixedPreloadSizeProvider;
-import com.bumptech.glide.util.ViewPreloadSizeProvider;
 
 import java.util.List;
 
@@ -27,6 +25,7 @@ import butterknife.OnClick;
 import ru.surdasha.cats.R;
 import ru.surdasha.cats.presentation.models.CatUI;
 import ru.surdasha.cats.presentation.ui.BaseFragment;
+import ru.surdasha.cats.presentation.misc.ViewUtils;
 
 public class AllCatsFragment extends BaseFragment implements AllCatsView {
 
@@ -84,7 +83,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     }
 
     private void setUpAdapter() {
-        allCatsAdapter = new AllCatsAdapter(getActivity(), getScreenWidth());
+        allCatsAdapter = new AllCatsAdapter(getActivity());
         allCatsAdapter.setOnDownloadClickListener(catUI -> {
             allCatsPresenter.downloadImage(catUI);
         });
@@ -101,7 +100,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
         final int imageHeightPixels = 768;
         ListPreloader.PreloadSizeProvider sizeProvider =
                 new FixedPreloadSizeProvider(imageWidthPixels, imageHeightPixels);
-        ListPreloader.PreloadModelProvider modelProvider = new AllCatsPreloadModelProvider(getActivity(), allCatsAdapter.getItems(), getScreenWidth());
+        ListPreloader.PreloadModelProvider modelProvider = new AllCatsPreloadModelProvider(getActivity(), allCatsAdapter.getItems());
         RecyclerViewPreloader<String> preloader =
                 new RecyclerViewPreloader<String>(this.getActivity(), modelProvider, sizeProvider, 10);
         rvCats.addOnScrollListener(preloader);
@@ -120,16 +119,9 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
         });
     }
 
-    private int getScreenWidth(){
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
-        return width;
-    }
-
     @Override
     public void onSuccessLoading(List<CatUI> cats) {
+        setCatsImagesParams(cats);
         groupCats.setVisibility(View.VISIBLE);
         allCatsAdapter.refreshData(cats);
         if (savedInstanceState != null) {
@@ -165,7 +157,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
 
     @Override
     public void onErrorAddToFavorites() {
-        Toast.makeText(getActivity(), "Не удалось сохранить кота в избранное", Toast.LENGTH_SHORT);
+        Toast.makeText(getActivity(), "Не удалось сохранить кота в избранное", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -180,11 +172,12 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
 
     @Override
     public void onErrorRefreshing() {
-        Toast.makeText(getActivity(), "Не удалоcь обновить котов", Toast.LENGTH_SHORT);
+        Toast.makeText(getActivity(), "Не удалоcь обновить котов", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSuccessNextLoading(List<CatUI> cats) {
+        setCatsImagesParams(cats);
         allCatsAdapter.addData(cats);
     }
 
@@ -202,17 +195,26 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
 
     @Override
     public void onErrorNextLoading() {
-        Toast.makeText(getActivity(), "Не удалоcь обновить котов", Toast.LENGTH_SHORT);
+        Toast.makeText(getActivity(), "Не удалоcь обновить котов", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSuccessAddToFavorites() {
-        Toast.makeText(getActivity(), "Картинка успешно сохранена в избранное", Toast.LENGTH_SHORT);
+        Toast.makeText(getActivity(), "Картинка успешно сохранена в избранное", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.ibRetry)
     public void onRetry() {
         allCatsPresenter.getAllCats();
+    }
+
+    private void setCatsImagesParams(List<CatUI> cats) {
+        int screenWidth = ViewUtils.getScreenWidth(getActivity());
+        for (CatUI catUI : cats) {
+            catUI.setScreenImageWidth(screenWidth);
+            catUI.setScreenImageHeight(ViewUtils.countAspectRatioHeight(screenWidth,
+                    catUI.getImageHeight(), catUI.getImageWidth()));
+        }
     }
 
     @Override

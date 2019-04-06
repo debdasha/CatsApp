@@ -1,5 +1,6 @@
 package ru.surdasha.cats.presentation.ui.favorites;
 
+import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
 import javax.inject.Inject;
@@ -15,7 +16,7 @@ import ru.surdasha.cats.domain.usecases.GetFavoriteCatsUseCase;
 import ru.surdasha.cats.presentation.mappers.CatUIMapper;
 import ru.surdasha.cats.presentation.models.CatUI;
 
-
+@InjectViewState
 public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
     @NonNull
     private final CompositeDisposable compositeDisposable;
@@ -38,8 +39,6 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
                 .map(cat -> catUIMapper.domainToUI(cat))
                 .toList()
                 .toMaybe()
-                .doOnComplete(() -> {
-                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cats -> {
@@ -61,10 +60,12 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
 
     public void deleteFromFavorite(CatUI catUI){
         deleteCatUseCase.deleteCat(catUIMapper.uiToDomain(catUI))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-
+                    getViewState().onShowSuccessDeleting(catUI);
                 },throwable -> {
-
+                    getViewState().onShowErrorDeleting();
                 });
     }
 

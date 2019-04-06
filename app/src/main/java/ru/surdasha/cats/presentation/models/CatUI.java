@@ -1,11 +1,16 @@
 package ru.surdasha.cats.presentation.models;
 
+import java.util.Objects;
+
 public class CatUI {
     private long Id;
     private String serverId;
     private String url;
     private int imageHeight;
     private int imageWidth;
+    private int screenImageWidth;
+    private int screenImageHeight;
+    private boolean isFavorite;
 
     public long getId() {
         return Id;
@@ -45,5 +50,37 @@ public class CatUI {
 
     public void setImageWidth(int imageWidth) {
         this.imageWidth = imageWidth;
+    }
+
+    public int getScreenImageWidth() {
+        return screenImageWidth;
+    }
+
+    public void setScreenImageWidth(int screenImageWidth) {
+        this.screenImageWidth = screenImageWidth;
+    }
+
+    public int getScreenImageHeight() {
+        return screenImageHeight;
+    }
+
+    public void setScreenImageHeight(int screenImageHeight) {
+        this.screenImageHeight = screenImageHeight;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CatUI catUI = (CatUI) o;
+        return Id == catUI.Id;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 }

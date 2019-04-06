@@ -4,12 +4,24 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.surdasha.cats.R;
+import ru.surdasha.cats.presentation.GlideApp;
+import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 
 public class FavoriteCatsAdapter extends
@@ -18,19 +30,23 @@ public class FavoriteCatsAdapter extends
     private static final String TAG = FavoriteCatsAdapter.class.getSimpleName();
 
     private Context context;
-    private List<CatUI> list;
-    private OnItemClickListener onItemClickListener;
+    private List<CatUI> list = new ArrayList<>();
+    private onDeleteCatListener onDeleteCatListener;
 
-    public FavoriteCatsAdapter(Context context, List<CatUI> list,
-                               OnItemClickListener onItemClickListener) {
+    public FavoriteCatsAdapter(Context context,
+                               onDeleteCatListener onDeleteCatListener) {
         this.context = context;
-        this.list = list;
-        this.onItemClickListener = onItemClickListener;
+        this.onDeleteCatListener = onDeleteCatListener;
     }
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        // Todo Butterknife bindings
+        @BindView(R.id.ivCat)
+        ImageView ivCat;
+        @BindView(R.id.ibDelete)
+        ImageButton ibDelete;
+        @BindView(R.id.constraintLayout)
+        ConstraintLayout constraintLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -38,16 +54,20 @@ public class FavoriteCatsAdapter extends
 
         }
 
-        public void bind(final CatUI model,
-                         final OnItemClickListener listener) {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(getLayoutPosition());
-
-                }
-            });
+        public void bind(Context context,final CatUI model, final onDeleteCatListener listener) {
+            ibDelete.setOnClickListener(v -> listener.onDeleteCat(model));
+            ivCat.getLayoutParams().height = model.getScreenImageHeight();
+            showWithGlide(context, model);
         }
+
+        private void showWithGlide(Context context, CatUI model) {
+            GlideApp.with(context)
+                    .load(model.getUrl())
+                    .placeholder(ViewUtils.createCircularImageDrawable(context))
+                    .override(model.getScreenImageWidth(), model.getScreenImageHeight())
+                    .into(ivCat);
+        }
+
     }
 
     @Override
@@ -63,13 +83,22 @@ public class FavoriteCatsAdapter extends
         return viewHolder;
     }
 
+    public void refreshData(@NonNull List<CatUI> newData) {
+        list.clear();
+        list.addAll(newData);
+        notifyDataSetChanged();
+    }
+
+    public void deleteData(CatUI catUI){
+        list.remove(catUI);
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         CatUI item = list.get(position);
-
-        //Todo: Setup viewholder for item 
-        holder.bind(item, onItemClickListener);
+        holder.bind(context, item, onDeleteCatListener);
     }
 
 
@@ -78,8 +107,8 @@ public class FavoriteCatsAdapter extends
         return list.size();
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
+    public interface onDeleteCatListener {
+        void onDeleteCat(CatUI model);
     }
 
 }

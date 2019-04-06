@@ -6,14 +6,14 @@ import io.reactivex.Maybe;
 import ru.surdasha.cats.domain.CatRepository;
 import ru.surdasha.cats.domain.models.Cat;
 
-public class GetCatsUseCase {
+public class GetAllCatsUseCase {
     private final CatRepository catRepository;
 
-    public GetCatsUseCase(CatRepository catRepository) {
+    public GetAllCatsUseCase(CatRepository catRepository) {
         this.catRepository = catRepository;
     }
 
-    public Maybe<List<Cat>> getCats(int pageNumber){
-        return catRepository.getCats(pageNumber);
+    public Maybe<List<Cat>> getAllCats(){
+        return catRepository.getAllCats();
     }
 }

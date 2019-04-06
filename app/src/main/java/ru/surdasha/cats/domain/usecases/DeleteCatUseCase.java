@@ -2,6 +2,7 @@ package ru.surdasha.cats.domain.usecases;
 
 import io.reactivex.Completable;
 import ru.surdasha.cats.domain.CatRepository;
+import ru.surdasha.cats.domain.models.Cat;
 
 public class DeleteCatUseCase {
     private CatRepository catRepository;
@@ -10,7 +11,7 @@ public class DeleteCatUseCase {
         this.catRepository = catRepository;
     }
 
-    public Completable deleteCat(int id){
-        return catRepository.deleteCat(id);
+    public Completable deleteCat(Cat cat){
+        return catRepository.deleteCat(cat);
     }
 }

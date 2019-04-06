@@ -3,6 +3,8 @@ package ru.surdasha.cats.di;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import javax.inject.Singleton;
+
 import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
@@ -19,7 +21,7 @@ public class NetworkModule {
 
     @NonNull
     @Provides
-    @MainScreen
+    @Singleton
     public CatRemoteInterface provideRetrofit(@NonNull OkHttpClient okHttpClient, @NonNull Gson gson) {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -31,7 +33,7 @@ public class NetworkModule {
 
     @NonNull
     @Provides
-    @MainScreen
+    @Singleton
     public Gson provideGson() {
         return new GsonBuilder()
                 .create();
@@ -39,14 +41,14 @@ public class NetworkModule {
 
     @NonNull
     @Provides
-    @MainScreen
+    @Singleton
     public RequestInterceptor provideRequestInterceptor() {
         return new RequestInterceptor();
     }
 
     @NonNull
     @Provides
-    @MainScreen
+    @Singleton
     public OkHttpClient provideOkHttpClient(@NonNull RequestInterceptor requestInterceptor) {
         return new OkHttpClient.Builder()
                 .addInterceptor(requestInterceptor)

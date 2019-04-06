@@ -1,6 +1,7 @@
 package ru.surdasha.cats.presentation;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.annotation.GlideModule;
@@ -13,6 +14,7 @@ public final class TRBTLGlideModule extends AppGlideModule {
     public void applyOptions(Context context, GlideBuilder builder) {
         int diskCacheSizeBytes = 1024 * 1024 * 50; // 100 MB
 //        int diskCacheSizeBytes = 100 * 1024; // 100 MB
-        builder.setDiskCache(new InternalCacheDiskCacheFactory(context, diskCacheSizeBytes));
+        builder.setDiskCache(new InternalCacheDiskCacheFactory(context, diskCacheSizeBytes))
+                .setLogLevel(Log.VERBOSE);
     }
 }

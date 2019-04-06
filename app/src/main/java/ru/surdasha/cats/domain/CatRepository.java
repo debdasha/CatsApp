@@ -7,11 +7,15 @@ import io.reactivex.Maybe;
 import ru.surdasha.cats.domain.models.Cat;
 
 public interface CatRepository {
-    Completable deleteCat(int id);
+    Completable deleteCat(Cat cat);
 
     Completable addCat(Cat cat);
 
-    Maybe<List<Cat>> getCats(int pageNumber);
+    Maybe<List<Cat>> getAllCats();
 
     Maybe<List<Cat>> getFavoriteCats();
+
+    Maybe<List<Cat>> getNextCats();
+
+    Completable deleteCats();
 }

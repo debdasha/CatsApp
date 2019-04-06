@@ -46,14 +46,20 @@ dependencies {
     //glide
     implementation "com.github.bumptech.glide:glide:4.9.0"
     annotationProcessor "com.github.bumptech.glide:compiler:4.9.0"
+    implementation ("com.github.bumptech.glide:recyclerview-integration:4.9.0") {
+        // Excludes the support library because it's already included by Glide.
+        transitive = false
+    }
     //retrofit
     implementation "com.squareup.retrofit2:retrofit:2.4.0"
     implementation "com.squareup.retrofit2:converter-gson:2.4.0"
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.4.0"
     //room
-    implementation "androidx.room:room-runtime:2.0.0"
-    implementation "androidx.room:room-rxjava2:2.0.0"
+    implementation "androidx.room:room-runtime:2.1.0-alpha04"
+    implementation "androidx.room:room-rxjava2:2.1.0-alpha04"
+    annotationProcessor "androidx.room:room-compiler:2.1.0-alpha04"
     //butterknife
     implementation 'com.jakewharton:butterknife:10.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
 }

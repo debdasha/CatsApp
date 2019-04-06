@@ -7,13 +7,10 @@ import com.arellomobile.mvp.MvpFragment;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.surdasha.cats.R;
-import android.app.Fragment;
 
 
-public class BaseFragment extends MvpFragment {
-    private int fragmentTag;
+public class BaseFragment extends MVPMoxyFragment {
     private Unbinder unbinder;
-    public static String FRAGMENT_TAG = "";
 
     public void bindBaseUI(View view) {
         unbinder = ButterKnife.bind(this, view);
@@ -22,7 +19,7 @@ public class BaseFragment extends MvpFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-//        unbinder.unbind();
+        unbinder.unbind();
     }
 
     protected boolean haveBackStep() {
@@ -31,7 +28,6 @@ public class BaseFragment extends MvpFragment {
 
     protected void backStep() {
         if (getActivity() != null) {
-
             getActivity().getFragmentManager().popBackStackImmediate();
         }
     }

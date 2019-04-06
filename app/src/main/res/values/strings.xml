@@ -3,4 +3,9 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="loading_cats">Загружаем кошечек, пожалуйста подождите</string>
+    <string name="error_loading">Возникла ошибка при попытке получить кошечек. Попробуйте еще раз</string>
+    <string name="no_cats">Нет кошечек, совсем ничего нет</string>
+    <string name="no_favorite_cats">Еще нет избранных кошечек, но Вы можете их добавить</string>
+    <string name="retry">Попробовать еще раз</string>
 </resources>

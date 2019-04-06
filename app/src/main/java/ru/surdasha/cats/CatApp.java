@@ -1,10 +1,12 @@
 package ru.surdasha.cats;
 
+import android.app.Activity;
 import android.app.Application;
 
 import ru.surdasha.cats.di.AppComponent;
 import ru.surdasha.cats.di.ContextModule;
 import ru.surdasha.cats.di.DaggerAppComponent;
+//import ru.surdasha.cats.di.DaggerMainActivityComponent;
 import ru.surdasha.cats.di.DatabaseModule;
 
 public class CatApp extends Application {
@@ -22,4 +24,5 @@ public class CatApp extends Application {
     public static AppComponent getAppComponent(){
         return component;
     }
+
 }

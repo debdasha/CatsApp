@@ -28,5 +28,5 @@ public interface FavoriteCatsView extends MvpView {
     void onShowErrorDeleting();
 
     @StateStrategyType(AddToEndStrategy.class)
-    void onShowSuccessDeleting();
+    void onShowSuccessDeleting(CatUI catUI);
 }

@@ -137,8 +137,10 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
 
     public void addToFavorite(CatUI catUI) {
         addCatUseCase.addCat(catUIMapper.uiToDomain(catUI))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-
+                    getViewState().onSuccessAddToFavorites();
                 }, throwable -> {
                     getViewState().onErrorAddToFavorites();
                 });

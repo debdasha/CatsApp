@@ -11,7 +11,11 @@ public interface CatRepository {
 
     Completable addCat(Cat cat);
 
-    Maybe<List<Cat>> getCats(int pageNumber);
+    Maybe<List<Cat>> getAllCats();
 
     Maybe<List<Cat>> getFavoriteCats();
+
+    Maybe<List<Cat>> getNextCats();
+
+    Completable deleteCats();
 }

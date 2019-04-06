@@ -30,6 +30,8 @@ import ru.surdasha.cats.presentation.ui.BaseFragment;
 
 public class AllCatsFragment extends BaseFragment implements AllCatsView {
 
+    private static final String STATE_POSITION_OFFSET = "STATE_POSITION_OFFSET";
+    private static final String STATE_POSITION_INDEX = "STATE_POSITION_INDEX";
     @BindView(R.id.rvCats)
     RecyclerView rvCats;
     @InjectPresenter
@@ -45,7 +47,6 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     Group groupError;
     @BindView(R.id.swRefresh)
     SwipeRefreshLayout swipeRefreshLayout;
-    LinearLayoutManager layoutManager;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
     @BindView(R.id.tvLoading)
@@ -54,9 +55,13 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     Button ibRetry;
     @BindView(R.id.groupNext)
     Group groupNext;
-    ViewPreloadSizeProvider sizeProvider;
-    private final int imageWidthPixels = 1024;
-    private final int imageHeightPixels = 768;
+    LinearLayoutManager layoutManager;
+    Bundle savedInstanceState;
+
+    @Override
+    public void onCreate( Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,8 +73,9 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
         setUpOnScrollListener();
         setUpSwipeRefresh();
         setUpPreload();
-        allCatsPresenter.getFirstCats();
+        allCatsPresenter.getAllCats();
         allCatsPresenter.subscribeToNextCats();
+        this.savedInstanceState = savedInstanceState;
         return view;
     }
 
@@ -78,7 +84,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     }
 
     private void setUpAdapter() {
-        allCatsAdapter = new AllCatsAdapter(getActivity(), sizeProvider, getScreenWidth());
+        allCatsAdapter = new AllCatsAdapter(getActivity(), getScreenWidth());
         allCatsAdapter.setOnDownloadClickListener(catUI -> {
             allCatsPresenter.downloadImage(catUI);
         });
@@ -91,6 +97,8 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     }
 
     private void setUpPreload() {
+        final int imageWidthPixels = 1024;
+        final int imageHeightPixels = 768;
         ListPreloader.PreloadSizeProvider sizeProvider =
                 new FixedPreloadSizeProvider(imageWidthPixels, imageHeightPixels);
         ListPreloader.PreloadModelProvider modelProvider = new AllCatsPreloadModelProvider(getActivity(), allCatsAdapter.getItems(), getScreenWidth());
@@ -124,6 +132,12 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     public void onSuccessLoading(List<CatUI> cats) {
         groupCats.setVisibility(View.VISIBLE);
         allCatsAdapter.refreshData(cats);
+        if (savedInstanceState != null) {
+            int index = savedInstanceState.getInt(STATE_POSITION_INDEX);
+            int offset = savedInstanceState.getInt(STATE_POSITION_OFFSET);
+            layoutManager.scrollToPositionWithOffset(index, offset);
+        }
+
     }
 
     @Override
@@ -198,7 +212,19 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
 
     @OnClick(R.id.ibRetry)
     public void onRetry() {
-        allCatsPresenter.getFirstCats();
+        allCatsPresenter.getAllCats();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle){
+        super.onSaveInstanceState(bundle);
+        if (rvCats != null) {
+            int index = layoutManager.findFirstVisibleItemPosition();
+            View topView = rvCats.getChildAt(0);
+            int offset = topView != null ? topView.getTop() : 0;
+            bundle.putInt(STATE_POSITION_INDEX, index);
+            bundle.putInt(STATE_POSITION_OFFSET, offset);
+        }
     }
 
     @Override

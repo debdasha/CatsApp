@@ -30,15 +30,13 @@ public class AllCatsViewHolder extends RecyclerView.ViewHolder {
     ImageButton ibLike;
     @BindView(R.id.constraintLayout)
     ConstraintLayout constraintLayout;
-    private ConstraintSet set = new ConstraintSet();
     private int width;
 
 
-    public AllCatsViewHolder(View itemView, ViewPreloadSizeProvider sizeProvider, int witdh) {
+    public AllCatsViewHolder(View itemView, int witdh) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         this.width = witdh;
-//        sizeProvider.setView(ivCat);
     }
 
     public void bind(Context context, final CatUI model, AllCatsAdapter.OnLikeClickListener onLikeClickListener,

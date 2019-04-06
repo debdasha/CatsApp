@@ -13,7 +13,9 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import ru.surdasha.cats.CatApp;
 import ru.surdasha.cats.domain.usecases.AddCatUseCase;
-import ru.surdasha.cats.domain.usecases.GetCatsUseCase;
+import ru.surdasha.cats.domain.usecases.GetAllCatsUseCase;
+import ru.surdasha.cats.domain.usecases.GetNextCatsUseCase;
+import ru.surdasha.cats.domain.usecases.RefreshCatsUseCase;
 import ru.surdasha.cats.presentation.mappers.CatUIMapper;
 import ru.surdasha.cats.presentation.models.CatUI;
 
@@ -22,15 +24,16 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
     @NonNull
     private final CompositeDisposable compositeDisposable;
     @Inject
-    GetCatsUseCase getCatsUseCase;
+    GetAllCatsUseCase getAllCatsUseCase;
+    @Inject
+    RefreshCatsUseCase refreshCatsUseCase;
+    @Inject
+    GetNextCatsUseCase getNextCatsUseCase;
     @Inject
     CatUIMapper catUIMapper;
     @Inject
     AddCatUseCase addCatUseCase;
     private PublishProcessor<Integer> scrollProcessor = PublishProcessor.create();
-
-    private final int DEFAULT_PAGE = 1;
-    private int pageNumber = DEFAULT_PAGE;
     private final static int SCROLL_THRESHOLD = 2;
 
     private volatile boolean loading;
@@ -40,14 +43,10 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
         compositeDisposable = new CompositeDisposable();
     }
 
-    public void loadCats(){
-
-    }
-
-    public void getFirstCats() {
+    public void getAllCats() {
         getViewState().onStartFirstLoading();
         loading = true;
-        Disposable disposable = getCatsUseCase.getCats(DEFAULT_PAGE)
+        Disposable disposable = getAllCatsUseCase.getAllCats()
                 .flattenAsObservable(cats -> cats)
                 .map(cat -> catUIMapper.domainToUI(cat))
                 .toList()
@@ -78,7 +77,7 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
         unsubscribe();
         getViewState().onStartRefreshing();
         loading = true;
-        Disposable disposable = getCatsUseCase.getCats(DEFAULT_PAGE)
+        Disposable disposable = refreshCatsUseCase.getRefreshedCats()
                 .flattenAsObservable(cats -> cats)
                 .map(cat -> catUIMapper.domainToUI(cat))
                 .toList()
@@ -89,7 +88,6 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cats -> {
                     getViewState().onEndRefreshing();
-                    pageNumber = 1;
                     loading = false;
                     getViewState().onSuccessLoading(cats);
                     subscribeToNextCats();
@@ -111,7 +109,7 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                 .concatMap(page -> {
                     loading = true;
                     getViewState().onStartNextLoading();
-                    return getCatsUseCase.getCats(page)
+                    return getNextCatsUseCase.getNextCats()
                             .subscribeOn(Schedulers.io())
                             .toFlowable();
                 })
@@ -123,6 +121,7 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                     getViewState().onSuccessNextLoading(cats);
                     loading = false;
                 }, throwable -> {
+                    loading = false;
                     getViewState().onEndNextLoading();
                     getViewState().onErrorNextLoading();
                 });
@@ -131,9 +130,8 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
 
     public synchronized void onScrolled(int count, int lastVisibleItemIndex) {
         if (!loading && count <= (lastVisibleItemIndex + SCROLL_THRESHOLD)) {
-            pageNumber++;
             loading = true;
-            scrollProcessor.onNext(pageNumber);
+            scrollProcessor.onNext(count);
         }
     }
 

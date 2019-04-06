@@ -28,12 +28,10 @@ public class AllCatsAdapter extends
     private OnLikeClickListener onLikeClickListener;
     @NonNull
     private OnDownloadClickListener onDownloadClickListener;
-    ViewPreloadSizeProvider sizeProvider;
     private int width;
 
-    public AllCatsAdapter(Context context, ViewPreloadSizeProvider sizeProvider, int width) {
+    public AllCatsAdapter(Context context, int width) {
         this.context = context;
-        this.sizeProvider =sizeProvider;
         this.width = width;
     }
 
@@ -46,7 +44,7 @@ public class AllCatsAdapter extends
         View view = inflater.inflate(R.layout.item_cat, parent, false);
         ButterKnife.bind(this, view);
 
-        AllCatsViewHolder allCatsViewHolder = new AllCatsViewHolder(view,sizeProvider, width);
+        AllCatsViewHolder allCatsViewHolder = new AllCatsViewHolder(view, width);
 
         return allCatsViewHolder;
     }
@@ -80,7 +78,6 @@ public class AllCatsAdapter extends
     }
 
     public void addData(@NonNull List<CatUI> newData) {
-        cats.clear();
         cats.addAll(newData);
         notifyDataSetChanged();
     }

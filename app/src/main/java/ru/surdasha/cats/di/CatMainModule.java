@@ -14,8 +14,10 @@ import ru.surdasha.cats.data.remote.NetworkSource;
 import ru.surdasha.cats.domain.CatRepository;
 import ru.surdasha.cats.domain.usecases.AddCatUseCase;
 import ru.surdasha.cats.domain.usecases.DeleteCatUseCase;
-import ru.surdasha.cats.domain.usecases.GetCatsUseCase;
+import ru.surdasha.cats.domain.usecases.GetAllCatsUseCase;
 import ru.surdasha.cats.domain.usecases.GetFavoriteCatsUseCase;
+import ru.surdasha.cats.domain.usecases.GetNextCatsUseCase;
+import ru.surdasha.cats.domain.usecases.RefreshCatsUseCase;
 import ru.surdasha.cats.presentation.mappers.CatUIMapper;
 
 @Module
@@ -23,9 +25,24 @@ public class CatMainModule {
     @NonNull
     @Singleton
     @Provides
-    GetCatsUseCase provideGetAllCats(@NonNull CatRepository catRepository) {
-        return new GetCatsUseCase(catRepository);
+    GetAllCatsUseCase provideGetAllCats(@NonNull CatRepository catRepository) {
+        return new GetAllCatsUseCase(catRepository);
     }
+
+    @NonNull
+    @Singleton
+    @Provides
+    RefreshCatsUseCase provideRefreshCatsUseCase(@NonNull CatRepository catRepository) {
+        return new RefreshCatsUseCase(catRepository);
+    }
+
+    @NonNull
+    @Singleton
+    @Provides
+    GetNextCatsUseCase provideGetNextCatsUseCase(@NonNull CatRepository catRepository) {
+        return new GetNextCatsUseCase(catRepository);
+    }
+
 
     @NonNull
     @Singleton

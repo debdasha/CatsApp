@@ -3,11 +3,18 @@ package ru.surdasha.cats.data.remote;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 import ru.surdasha.cats.data.remote.models.CatRemote;
 
 public class MemoryCatsCache {
     private final int MAX_SIZE = 100;
     private List<CatRemote> cats = new LinkedList<>();
+
+    public List<CatRemote> getCats(){
+        return cats;
+    }
 
     public boolean isEmpty(){
         return cats.isEmpty();
@@ -18,8 +25,8 @@ public class MemoryCatsCache {
         cats.addAll(remotes);
     }
 
-    public List<CatRemote> getCats(){
-        return cats;
+    public void clearCache(){
+        cats.clear();
     }
 
     private void checkCacheSize(){

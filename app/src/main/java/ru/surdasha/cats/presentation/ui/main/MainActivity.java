@@ -41,7 +41,9 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        showFragment(new AllCatsFragment(), false);
+        if (savedInstanceState == null) {
+            showFragment(new AllCatsFragment(), false);
+        }
     }
 
 }

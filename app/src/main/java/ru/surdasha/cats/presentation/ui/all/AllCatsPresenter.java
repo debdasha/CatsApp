@@ -13,6 +13,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import ru.surdasha.cats.CatApp;
 import ru.surdasha.cats.domain.usecases.AddCatUseCase;
+import ru.surdasha.cats.domain.usecases.DownloadImageUseCase;
 import ru.surdasha.cats.domain.usecases.GetAllCatsUseCase;
 import ru.surdasha.cats.domain.usecases.GetNextCatsUseCase;
 import ru.surdasha.cats.domain.usecases.RefreshCatsUseCase;
@@ -29,6 +30,8 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
     RefreshCatsUseCase refreshCatsUseCase;
     @Inject
     GetNextCatsUseCase getNextCatsUseCase;
+    @Inject
+    DownloadImageUseCase downloadImageUseCase;
     @Inject
     CatUIMapper catUIMapper;
     @Inject
@@ -136,7 +139,7 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
     }
 
     public void addToFavorite(CatUI catUI) {
-        addCatUseCase.addCat(catUIMapper.uiToDomain(catUI))
+        Disposable disposable = addCatUseCase.addCat(catUIMapper.uiToDomain(catUI))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
@@ -144,10 +147,18 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                 }, throwable -> {
                     getViewState().onErrorAddToFavorites();
                 });
+        compositeDisposable.add(disposable);
     }
 
     public void downloadImage(CatUI catUI) {
-
+        Disposable disposable = downloadImageUseCase.downloadImage(catUIMapper.uiToDomain(catUI))
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    getViewState().onStartImageDownload();
+                }, throwable -> {
+                    getViewState().onErrorImageDownload();
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void unsubscribe() {

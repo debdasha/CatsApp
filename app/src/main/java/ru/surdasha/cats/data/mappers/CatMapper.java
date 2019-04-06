@@ -15,6 +15,15 @@ public class CatMapper {
         return cat;
     }
 
+    public CatRemote domainToRemote(Cat cat){
+        CatRemote catRemote = new CatRemote();
+        catRemote.setId(cat.getServerId());
+        catRemote.setUrl(cat.getUrl());
+        catRemote.setImageHeight(cat.getImageHeight());
+        catRemote.setImageWidth(cat.getImageWidth());
+        return catRemote;
+    }
+
     public CatDb domainToDb(Cat cat){
         CatDb catDb = new CatDb();
         catDb.setId(cat.getId());

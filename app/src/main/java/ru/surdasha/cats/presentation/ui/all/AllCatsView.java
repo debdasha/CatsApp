@@ -52,4 +52,13 @@ public interface AllCatsView extends MvpView {
 
     @StateStrategyType(AddToEndStrategy.class)
     void onErrorAddToFavorites();
+
+    @StateStrategyType(AddToEndStrategy.class)
+    void onStartImageDownload();
+
+    @StateStrategyType(AddToEndStrategy.class)
+    void onSuccessImageDownload();
+
+    @StateStrategyType(AddToEndStrategy.class)
+    void onErrorImageDownload();
 }

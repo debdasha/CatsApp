@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 import ru.surdasha.cats.domain.models.Cat;
 
 public interface CatRepository {
@@ -18,4 +19,6 @@ public interface CatRepository {
     Maybe<List<Cat>> getNextCats();
 
     Completable deleteCats();
+
+    Single<Long> downloadImage(Cat cat);
 }

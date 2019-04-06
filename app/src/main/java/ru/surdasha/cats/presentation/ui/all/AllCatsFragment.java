@@ -161,6 +161,21 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     }
 
     @Override
+    public void onStartImageDownload() {
+        Toast.makeText(getActivity(), "Загрузка картинки начата", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSuccessImageDownload() {
+        Toast.makeText(getActivity(), "Картинка успешно загружена в папку Downloads", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onErrorImageDownload() {
+        Toast.makeText(getActivity(), "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onStartRefreshing() {
         swipeRefreshLayout.setRefreshing(true);
     }

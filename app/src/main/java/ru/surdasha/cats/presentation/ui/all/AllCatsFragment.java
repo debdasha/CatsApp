@@ -33,9 +33,9 @@ import butterknife.OnClick;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 import ru.surdasha.cats.R;
+import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 import ru.surdasha.cats.presentation.ui.BaseFragment;
-import ru.surdasha.cats.presentation.misc.ViewUtils;
 
 public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPermissions.PermissionCallbacks {
 

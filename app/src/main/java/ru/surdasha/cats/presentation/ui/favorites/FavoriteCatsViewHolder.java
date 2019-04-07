@@ -1,6 +1,5 @@
-package ru.surdasha.cats.presentation.ui.all;
+package ru.surdasha.cats.presentation.ui.favorites;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.ImageButton;
@@ -20,30 +19,24 @@ import ru.surdasha.cats.presentation.GlideApp;
 import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 
-public class AllCatsViewHolder extends RecyclerView.ViewHolder {
+public class FavoriteCatsViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.ivCat)
     ImageView ivCat;
-    @BindView(R.id.ibDownload)
-    ImageButton ibDownload;
-    @BindView(R.id.ibLike)
-    ImageButton ibLike;
+    @BindView(R.id.ibDelete)
+    ImageButton ibDelete;
     @BindView(R.id.constraintLayout)
     ConstraintLayout constraintLayout;
 
-
-    public AllCatsViewHolder(View itemView) {
+    public FavoriteCatsViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
+
     }
 
-    public void bind(Activity context, final CatUI model, AllCatsAdapter.OnLikeClickListener onLikeClickListener,
-                     AllCatsAdapter.OnDownloadClickListener onDownloadClickListener ) {
-        RxView.clicks(ibDownload)
+    public void bind(Context context, final CatUI model, final FavoriteCatsAdapter.onDeleteCatListener listener) {
+        RxView.clicks(ibDelete)
                 .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                .subscribe(unit -> onDownloadClickListener.onDownloadClick(model));
-        RxView.clicks(ibLike)
-                .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                .subscribe(unit -> onLikeClickListener.onLikeClick(model));
+                .subscribe(unit -> listener.onDeleteCat(model));
         ivCat.getLayoutParams().height = model.getScreenImageHeight();
         showWithGlide(context, model);
     }
@@ -55,4 +48,5 @@ public class AllCatsViewHolder extends RecyclerView.ViewHolder {
                 .override(model.getScreenImageWidth(), model.getScreenImageHeight())
                 .into(ivCat);
     }
+
 }

@@ -8,8 +8,6 @@ import ru.surdasha.cats.di.DaggerAppComponent;
 import ru.surdasha.cats.di.DatabaseModule;
 import ru.surdasha.cats.di.DownloadManagerModule;
 
-//import ru.surdasha.cats.di.DaggerMainActivityComponent;
-
 public class CatApp extends Application {
     private static AppComponent component;
 

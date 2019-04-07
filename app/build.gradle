@@ -65,4 +65,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     //permissions
     implementation 'pub.devrel:easypermissions:3.0.0'
+    implementation 'com.jakewharton.rxbinding3:rxbinding-core:3.0.0-alpha2'
 }

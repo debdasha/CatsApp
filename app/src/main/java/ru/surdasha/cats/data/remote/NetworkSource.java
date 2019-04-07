@@ -15,17 +15,18 @@ import ru.surdasha.cats.common.AndroidUtils;
 import ru.surdasha.cats.data.remote.models.CatRemote;
 
 public class NetworkSource {
-    @NonNull
     private final CatRemoteInterface catRemoteInterface;
-    @NonNull
     private final DownloadManager downloadManager;
+    private final AndroidUtils androidUtils;
     private final int catsPageCount = 10;
     private final int DEFAULT_PAGE = 1;
     private int currentPageNumber = DEFAULT_PAGE;
 
-    public NetworkSource(@NonNull CatRemoteInterface catRemoteInterface, DownloadManager downloadManager){
+    public NetworkSource(@NonNull CatRemoteInterface catRemoteInterface, DownloadManager downloadManager,
+                         AndroidUtils androidUtils){
         this.catRemoteInterface = catRemoteInterface;
         this.downloadManager = downloadManager;
+        this.androidUtils = androidUtils;
     }
 
     public Maybe<List<CatRemote>> getCats(){
@@ -39,7 +40,7 @@ public class NetworkSource {
     public Single<Long> downloadImage(CatRemote catRemote){
         return Single.fromCallable(() -> {
             DownloadManager.Request request=new DownloadManager.Request(Uri.parse(catRemote.getUrl()))
-                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                     .setDestinationUri(getImageFileUri(catRemote))
                     .setAllowedOverMetered(true)
                     .setAllowedOverRoaming(true);
@@ -63,7 +64,7 @@ public class NetworkSource {
 
     @NotNull
     private String getDestinationFolderPath() {
-        File downloadFolder = AndroidUtils.getDownloadsFolder();
+        File downloadFolder = androidUtils.getDownloadsFolder();
         if (!downloadFolder.exists()){
             downloadFolder.mkdir();
         }

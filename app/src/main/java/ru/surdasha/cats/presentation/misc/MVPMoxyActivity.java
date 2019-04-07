@@ -57,7 +57,7 @@ public class MVPMoxyActivity extends FragmentActivity {
     }
 
     /**
-     * @return The {@link MvpDelegate} being used by this Activity.
+     * @return The {@link MvpDelegate} being used by this PerActivity.
      */
     public MvpDelegate getMvpDelegate() {
         if (mMvpDelegate == null) {

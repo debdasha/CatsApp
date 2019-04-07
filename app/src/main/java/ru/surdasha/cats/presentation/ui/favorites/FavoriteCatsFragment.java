@@ -16,11 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.surdasha.cats.R;
-import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 import ru.surdasha.cats.presentation.ui.BaseFragment;
+import ru.surdasha.cats.presentation.ui.main.MainActivity;
 
 public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsView {
+    public static final String TAG = FavoriteCatsFragment.class.getSimpleName();
     @BindView(R.id.rvCats)
     RecyclerView rvCats;
     FavoriteCatsAdapter favoriteCatsAdapter;
@@ -36,6 +37,10 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
     FavoriteCatsPresenter favoriteCatsPresenter;
     LinearLayoutManager layoutManager;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,9 +48,15 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorite_cats, container, false);
         bindBaseUI(view);
-        favoriteCatsPresenter.getCats();
         setUpAdapter();
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        ((MainActivity)getActivity()).getUIComponent().inject(favoriteCatsPresenter);
+        favoriteCatsPresenter.getCats();
     }
 
     private void setUpAdapter() {
@@ -57,7 +68,6 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
 
     @Override
     public void onShowCats(List<CatUI> cats) {
-        setCatsImagesParams(cats);
         groupCats.setVisibility(View.VISIBLE);
         favoriteCatsAdapter.refreshData(cats);
     }
@@ -104,14 +114,5 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
     public void onDestroyView() {
         super.onDestroyView();
         favoriteCatsPresenter.unsubscribe();
-    }
-
-    private void setCatsImagesParams(List<CatUI> cats) {
-        int screenWidth = ViewUtils.getScreenWidth(getActivity());
-        for (CatUI catUI : cats) {
-            catUI.setScreenImageWidth(screenWidth);
-            catUI.setScreenImageHeight(ViewUtils.countAspectRatioHeight(screenWidth,
-                    catUI.getImageHeight(), catUI.getImageWidth()));
-        }
     }
 }

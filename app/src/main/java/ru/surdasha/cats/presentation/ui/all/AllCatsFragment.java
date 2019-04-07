@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,16 +31,18 @@ import butterknife.OnClick;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 import ru.surdasha.cats.R;
-import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 import ru.surdasha.cats.presentation.ui.BaseFragment;
+import ru.surdasha.cats.presentation.ui.main.MainActivity;
 
 public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPermissions.PermissionCallbacks {
+    public static final String TAG = AllCatsFragment.class.getSimpleName();
 
     private static final String STATE_POSITION_OFFSET = "STATE_POSITION_OFFSET";
     private static final String STATE_POSITION_INDEX = "STATE_POSITION_INDEX";
     private static final int REQUEST_PERMISSION_CODE = 1;
     private static final String WRITE_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
     @BindView(R.id.rvCats)
     RecyclerView rvCats;
     @InjectPresenter
@@ -71,6 +72,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
     }
 
     @Override
@@ -83,11 +85,15 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
         setUpOnScrollListener();
         setUpSwipeRefresh();
         setUpPreload();
-        allCatsPresenter.getAllCats();
-        allCatsPresenter.subscribeToNextCats();
-        this.savedInstanceState = savedInstanceState;
-        getActivity().registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        ((MainActivity)getActivity()).getUIComponent().inject(allCatsPresenter);
+        getInitData();
+        subscribeToDownloadManager();
     }
 
     private void setUpSwipeRefresh() {
@@ -130,9 +136,20 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
         });
     }
 
+    private void subscribeToDownloadManager() {
+        getActivity().registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    private void getInitData() {
+        allCatsPresenter.getAllCats();
+        allCatsPresenter.subscribeToNextCats();
+    }
+
+
     private void onDownloadClick(CatUI catUI) {
+        //save cat to variable due to permissions check
         allCatsPresenter.setTempImageDownloadCat(catUI);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (allCatsPresenter.checkPermissionsRequired()) {
             checkForPermission();
         } else {
             allCatsPresenter.downloadImage();
@@ -153,7 +170,6 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
 
     @Override
     public void onSuccessLoading(List<CatUI> cats) {
-        setCatsImagesParams(cats);
         groupCats.setVisibility(View.VISIBLE);
         allCatsAdapter.refreshData(cats);
         if (savedInstanceState != null) {
@@ -224,7 +240,6 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
 
     @Override
     public void onSuccessNextLoading(List<CatUI> cats) {
-        setCatsImagesParams(cats);
         allCatsAdapter.addData(cats);
     }
 
@@ -255,14 +270,6 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
         allCatsPresenter.getAllCats();
     }
 
-    private void setCatsImagesParams(List<CatUI> cats) {
-        int screenWidth = ViewUtils.getScreenWidth(getActivity());
-        for (CatUI catUI : cats) {
-            catUI.setScreenImageWidth(screenWidth);
-            catUI.setScreenImageHeight(ViewUtils.countAspectRatioHeight(screenWidth,
-                    catUI.getImageHeight(), catUI.getImageWidth()));
-        }
-    }
 
     public void checkForPermission() {
         if (isPermissionGranted()) {

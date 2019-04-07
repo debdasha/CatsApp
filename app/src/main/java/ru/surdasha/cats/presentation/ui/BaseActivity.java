@@ -15,37 +15,24 @@ public class BaseActivity extends MVPMoxyActivity {
         super.onCreate(savedInstanceState);
     }
 
-    public void addFragment(Fragment fragment, boolean addToBack) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
-        transaction.add( R.id.container, fragment);
-        if (addToBack) {
-            transaction.addToBackStack(null);
+
+    public void showFragmentWithTag(Fragment fragmentToShow, String tag, boolean isNewFragment) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        Fragment fragmentToHide = getSupportFragmentManager().getPrimaryNavigationFragment();
+        if (fragmentToHide != null) {
+            fragmentTransaction.detach(fragmentToHide);
         }
-        transaction.commit();
+        if (isNewFragment) {
+            fragmentTransaction.add(R.id.container, fragmentToShow, tag);
+        } else {
+            fragmentTransaction.attach(fragmentToShow);
+        }
+        fragmentTransaction.setPrimaryNavigationFragment(fragmentToShow);
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.commitNowAllowingStateLoss();
     }
 
-    public void showFragment(BaseFragment fragment, boolean addToBack, int containerId) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
-        transaction.replace(containerId, fragment);
-        if (addToBack) {
-            transaction.addToBackStack(null);
-        }
-        transaction.commit();
-    }
-
-    public void showFragment(BaseFragment fragment, boolean addToBack) {
-        showFragment(fragment, addToBack, R.id.container);
-    }
-
-    public void showFragmentWithTag(Fragment fragment, boolean addToBack, String tag) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
-        transaction.replace(R.id.container, fragment, tag);
-        if (addToBack) {
-            transaction.addToBackStack(null);
-        }
-        transaction.commitAllowingStateLoss();
+    public Fragment getFragmentByTag(String tag){
+        return getSupportFragmentManager().findFragmentByTag(tag);
     }
 }

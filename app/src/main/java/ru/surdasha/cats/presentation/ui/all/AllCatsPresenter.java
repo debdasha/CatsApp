@@ -3,6 +3,8 @@ package ru.surdasha.cats.presentation.ui.all;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
@@ -11,13 +13,14 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import ru.surdasha.cats.CatApp;
+import ru.surdasha.cats.common.AndroidUtils;
 import ru.surdasha.cats.domain.usecases.AddCatUseCase;
 import ru.surdasha.cats.domain.usecases.DownloadImageUseCase;
 import ru.surdasha.cats.domain.usecases.GetAllCatsUseCase;
 import ru.surdasha.cats.domain.usecases.GetNextCatsUseCase;
 import ru.surdasha.cats.domain.usecases.RefreshCatsUseCase;
 import ru.surdasha.cats.presentation.mappers.CatUIMapper;
+import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 
 @InjectViewState
@@ -36,13 +39,16 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
     CatUIMapper catUIMapper;
     @Inject
     AddCatUseCase addCatUseCase;
+    @Inject
+    ViewUtils viewUtils;
+    @Inject
+    AndroidUtils androidUtils;
     private PublishProcessor<Integer> scrollProcessor = PublishProcessor.create();
     private final static int SCROLL_THRESHOLD = 2;
     private volatile boolean loading;
     private CatUI tempImageDownloadCat;
 
     public AllCatsPresenter() {
-        CatApp.getAppComponent().inject(this);
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -62,6 +68,7 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                     if (cats.isEmpty()) {
                         getViewState().onEmptyList();
                     } else {
+                        setCatsImagesParams(cats);
                         getViewState().onSuccessLoading(cats);
                     }
                 }, throwable -> {
@@ -92,7 +99,12 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                 .subscribe(cats -> {
                     getViewState().onEndRefreshing();
                     loading = false;
-                    getViewState().onSuccessLoading(cats);
+                    if (cats.isEmpty()) {
+                        getViewState().onEmptyList();
+                    } else {
+                        setCatsImagesParams(cats);
+                        getViewState().onSuccessLoading(cats);
+                    }
                     subscribeToNextCats();
                 }, throwable -> {
                     loading = false;
@@ -120,6 +132,7 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                 .map(cat -> catUIMapper.domainToUI(cat))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cats -> {
+                    setCatsImagesParams(cats);
                     getViewState().onEndNextLoading();
                     getViewState().onSuccessNextLoading(cats);
                     loading = false;
@@ -165,6 +178,19 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
 
     public void setTempImageDownloadCat(CatUI catUI){
         this.tempImageDownloadCat = catUI;
+    }
+
+    private void setCatsImagesParams(List<CatUI> cats) {
+        int screenWidth = viewUtils.getScreenWidth();
+        for (CatUI catUI : cats) {
+            catUI.setScreenImageWidth(screenWidth);
+            catUI.setScreenImageHeight(viewUtils.countAspectRatioHeight(screenWidth,
+                    catUI.getImageHeight(), catUI.getImageWidth()));
+        }
+    }
+
+    public boolean checkPermissionsRequired(){
+        return androidUtils.checkRequiredPermission();
     }
 
     public void unsubscribe() {

@@ -1,6 +1,7 @@
 package ru.surdasha.cats.presentation.ui.favorites;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -11,12 +12,12 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import ru.surdasha.cats.R;
 import ru.surdasha.cats.presentation.GlideApp;
-import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 
 public class FavoriteCatsViewHolder extends RecyclerView.ViewHolder {
@@ -44,9 +45,18 @@ public class FavoriteCatsViewHolder extends RecyclerView.ViewHolder {
     private void showWithGlide(Activity context, CatUI model) {
         GlideApp.with(context)
                 .load(model.getUrl())
-                .placeholder(ViewUtils.createCircularImageDrawable(context))
+                .placeholder(createCircularImageDrawable(context))
                 .override(model.getScreenImageWidth(), model.getScreenImageHeight())
                 .into(ivCat);
+    }
+
+
+    public CircularProgressDrawable createCircularImageDrawable(Context context) {
+        CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(context);
+        circularProgressDrawable.setStrokeWidth(3f);
+        circularProgressDrawable.setCenterRadius(20f);
+        circularProgressDrawable.start();
+        return circularProgressDrawable;
     }
 
 }

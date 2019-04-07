@@ -13,6 +13,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import ru.surdasha.cats.CatApp;
 import ru.surdasha.cats.domain.usecases.AddCatUseCase;
+import ru.surdasha.cats.domain.usecases.DownloadImageUseCase;
 import ru.surdasha.cats.domain.usecases.GetAllCatsUseCase;
 import ru.surdasha.cats.domain.usecases.GetNextCatsUseCase;
 import ru.surdasha.cats.domain.usecases.RefreshCatsUseCase;
@@ -30,13 +31,15 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
     @Inject
     GetNextCatsUseCase getNextCatsUseCase;
     @Inject
+    DownloadImageUseCase downloadImageUseCase;
+    @Inject
     CatUIMapper catUIMapper;
     @Inject
     AddCatUseCase addCatUseCase;
     private PublishProcessor<Integer> scrollProcessor = PublishProcessor.create();
     private final static int SCROLL_THRESHOLD = 2;
-
     private volatile boolean loading;
+    private CatUI tempImageDownloadCat;
 
     public AllCatsPresenter() {
         CatApp.getAppComponent().inject(this);
@@ -136,7 +139,7 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
     }
 
     public void addToFavorite(CatUI catUI) {
-        addCatUseCase.addCat(catUIMapper.uiToDomain(catUI))
+        Disposable disposable = addCatUseCase.addCat(catUIMapper.uiToDomain(catUI))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
@@ -144,10 +147,24 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                 }, throwable -> {
                     getViewState().onErrorAddToFavorites();
                 });
+        compositeDisposable.add(disposable);
     }
 
-    public void downloadImage(CatUI catUI) {
+    public void downloadImage() {
+        Disposable disposable = downloadImageUseCase.downloadImage(catUIMapper.uiToDomain(tempImageDownloadCat))
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(downloadId -> {
+                    tempImageDownloadCat.setTempDownloadId(downloadId);
+                    getViewState().onStartImageDownload();
+                }, throwable -> {
+                    tempImageDownloadCat = null;
+                    getViewState().onErrorImageDownload();
+                });
+        compositeDisposable.add(disposable);
+    }
 
+    public void setTempImageDownloadCat(CatUI catUI){
+        this.tempImageDownloadCat = catUI;
     }
 
     public void unsubscribe() {

@@ -6,7 +6,6 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import java.util.List;
 
-import ru.surdasha.cats.domain.models.Cat;
 import ru.surdasha.cats.presentation.models.CatUI;
 
 public interface AllCatsView extends MvpView {
@@ -52,4 +51,13 @@ public interface AllCatsView extends MvpView {
 
     @StateStrategyType(AddToEndStrategy.class)
     void onErrorAddToFavorites();
+
+    @StateStrategyType(AddToEndStrategy.class)
+    void onStartImageDownload();
+
+    @StateStrategyType(AddToEndStrategy.class)
+    void onSuccessImageDownload();
+
+    @StateStrategyType(AddToEndStrategy.class)
+    void onErrorImageDownload();
 }

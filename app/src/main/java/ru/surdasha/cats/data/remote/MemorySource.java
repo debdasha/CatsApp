@@ -3,7 +3,6 @@ package ru.surdasha.cats.data.remote;
 import java.util.List;
 
 import io.reactivex.Completable;
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import ru.surdasha.cats.data.remote.models.CatRemote;
 

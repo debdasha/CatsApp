@@ -1,19 +1,14 @@
 package ru.surdasha.cats.data;
 
-import java.util.LinkedList;
 import java.util.List;
-
-import javax.inject.Singleton;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import ru.surdasha.cats.data.db.DbSource;
 import ru.surdasha.cats.data.mappers.CatMapper;
-import ru.surdasha.cats.data.remote.MemoryCatsCache;
 import ru.surdasha.cats.data.remote.MemorySource;
 import ru.surdasha.cats.data.remote.NetworkSource;
-import ru.surdasha.cats.data.remote.models.CatRemote;
 import ru.surdasha.cats.domain.CatRepository;
 import ru.surdasha.cats.domain.models.Cat;
 
@@ -80,7 +75,11 @@ public class CatsRepositoryImpl implements CatRepository {
 
     @Override
     public Completable deleteCats() {
-
         return memoryCatsCache.deleteCats();
+    }
+
+    @Override
+    public Single<Long> downloadImage(Cat cat) {
+        return networkSource.downloadImage(catMapper.domainToRemote(cat));
     }
 }

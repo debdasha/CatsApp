@@ -8,7 +8,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.NonNull;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.surdasha.cats.CatApp;
 import ru.surdasha.cats.R;
 import ru.surdasha.cats.presentation.ui.BaseActivity;
 import ru.surdasha.cats.presentation.ui.all.AllCatsFragment;

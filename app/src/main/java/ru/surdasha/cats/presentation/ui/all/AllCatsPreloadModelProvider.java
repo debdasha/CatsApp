@@ -12,8 +12,8 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ru.surdasha.cats.presentation.GlideApp;
-import ru.surdasha.cats.presentation.models.CatUI;
 import ru.surdasha.cats.presentation.misc.ViewUtils;
+import ru.surdasha.cats.presentation.models.CatUI;
 
 public class AllCatsPreloadModelProvider implements ListPreloader.PreloadModelProvider<CatUI> {
     private List<CatUI> catUIS;

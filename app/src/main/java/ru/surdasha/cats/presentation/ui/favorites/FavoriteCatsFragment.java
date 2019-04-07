@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.List;
@@ -17,10 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.surdasha.cats.R;
+import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 import ru.surdasha.cats.presentation.ui.BaseFragment;
-import ru.surdasha.cats.presentation.misc.ViewUtils;
-import ru.surdasha.cats.presentation.ui.all.AllCatsAdapter;
 
 public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsView {
     @BindView(R.id.rvCats)

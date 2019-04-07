@@ -2,11 +2,10 @@ package ru.surdasha.cats.presentation.ui;
 
 import android.view.View;
 
-import com.arellomobile.mvp.MvpFragment;
-
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.surdasha.cats.R;
+import ru.surdasha.cats.presentation.misc.MVPMoxyFragment;
 
 
 public class BaseFragment extends MVPMoxyFragment {

@@ -1,5 +1,7 @@
 package ru.surdasha.cats.di;
 
+import android.app.DownloadManager;
+
 import javax.inject.Singleton;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import ru.surdasha.cats.data.remote.NetworkSource;
 import ru.surdasha.cats.domain.CatRepository;
 import ru.surdasha.cats.domain.usecases.AddCatUseCase;
 import ru.surdasha.cats.domain.usecases.DeleteCatUseCase;
+import ru.surdasha.cats.domain.usecases.DownloadImageUseCase;
 import ru.surdasha.cats.domain.usecases.GetAllCatsUseCase;
 import ru.surdasha.cats.domain.usecases.GetFavoriteCatsUseCase;
 import ru.surdasha.cats.domain.usecases.GetNextCatsUseCase;
@@ -68,6 +71,13 @@ public class CatMainModule {
     @NonNull
     @Singleton
     @Provides
+    DownloadImageUseCase provideDownloadImageUseCase(@NonNull CatRepository catRepository) {
+        return new DownloadImageUseCase(catRepository);
+    }
+
+    @NonNull
+    @Singleton
+    @Provides
     CatRepository provideCatRepository(@NonNull NetworkSource networkSource, CatMapper catMapper,
                                        DbSource dbSource) {
         return new CatsRepositoryImpl(networkSource, catMapper, dbSource);
@@ -90,8 +100,8 @@ public class CatMainModule {
     @NonNull
     @Singleton
     @Provides
-    NetworkSource provideNetworkSource(CatRemoteInterface catRemoteInterface) {
-        return new NetworkSource(catRemoteInterface);
+    NetworkSource provideNetworkSource(CatRemoteInterface catRemoteInterface, DownloadManager downloadManager) {
+        return new NetworkSource(catRemoteInterface, downloadManager);
     }
 
     @NonNull

@@ -1,4 +1,4 @@
-package ru.surdasha.cats.presentation.ui;
+package ru.surdasha.cats.presentation.misc;
 
 import android.os.Bundle;
 

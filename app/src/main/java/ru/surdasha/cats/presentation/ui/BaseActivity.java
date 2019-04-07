@@ -1,11 +1,11 @@
 package ru.surdasha.cats.presentation.ui;
 
 import android.os.Bundle;
-import androidx.fragment.app.FragmentActivity;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import ru.surdasha.cats.R;
+import ru.surdasha.cats.presentation.misc.MVPMoxyActivity;
 
 
 public class BaseActivity extends MVPMoxyActivity {

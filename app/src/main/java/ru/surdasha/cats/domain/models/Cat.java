@@ -1,19 +1,10 @@
 package ru.surdasha.cats.domain.models;
 
 public class Cat {
-    private long id;
     private String serverId;
     private String url;
     private int imageHeight;
     private int imageWidth;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getServerId() {
         return serverId;

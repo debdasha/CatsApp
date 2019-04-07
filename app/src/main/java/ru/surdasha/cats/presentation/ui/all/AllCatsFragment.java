@@ -6,8 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,33 +18,31 @@ import android.widget.Toast;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
-import com.bumptech.glide.util.FixedPreloadSizeProvider;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.Group;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.OnClick;
-import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 import ru.surdasha.cats.R;
 import ru.surdasha.cats.presentation.models.CatUI;
 import ru.surdasha.cats.presentation.ui.BaseFragment;
-import ru.surdasha.cats.presentation.misc.ViewUtils;
+import ru.surdasha.cats.presentation.ui.main.MainActivity;
 
 public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPermissions.PermissionCallbacks {
+    public static final String TAG = AllCatsFragment.class.getSimpleName();
 
     private static final String STATE_POSITION_OFFSET = "STATE_POSITION_OFFSET";
     private static final String STATE_POSITION_INDEX = "STATE_POSITION_INDEX";
     private static final int REQUEST_PERMISSION_CODE = 1;
     private static final String WRITE_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
     @BindView(R.id.rvCats)
     RecyclerView rvCats;
     @InjectPresenter
@@ -76,6 +72,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
     }
 
     @Override
@@ -88,11 +85,15 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
         setUpOnScrollListener();
         setUpSwipeRefresh();
         setUpPreload();
-        allCatsPresenter.getAllCats();
-        allCatsPresenter.subscribeToNextCats();
-        this.savedInstanceState = savedInstanceState;
-        getActivity().registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        ((MainActivity)getActivity()).getUIComponent().inject(allCatsPresenter);
+        getInitData();
+        subscribeToDownloadManager();
     }
 
     private void setUpSwipeRefresh() {
@@ -102,12 +103,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
     private void setUpAdapter() {
         allCatsAdapter = new AllCatsAdapter(getActivity());
         allCatsAdapter.setOnDownloadClickListener(catUI -> {
-            allCatsPresenter.setTempImageDownloadCat(catUI);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                checkForPermission();
-            } else {
-                allCatsPresenter.downloadImage();
-            }
+            onDownloadClick(catUI);
         });
         allCatsAdapter.setOnLikeClickListener(catUI -> {
             allCatsPresenter.addToFavorite(catUI);
@@ -118,13 +114,12 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
     }
 
     private void setUpPreload() {
-        final int imageWidthPixels = 1024;
-        final int imageHeightPixels = 768;
+        final int maxPreloadCount = 10;
         ListPreloader.PreloadSizeProvider sizeProvider =
-                new FixedPreloadSizeProvider(imageWidthPixels, imageHeightPixels);
+                new AllCatsPreloadSizeProvider();
         ListPreloader.PreloadModelProvider modelProvider = new AllCatsPreloadModelProvider(getActivity(), allCatsAdapter.getItems());
         RecyclerViewPreloader<String> preloader =
-                new RecyclerViewPreloader<String>(this.getActivity(), modelProvider, sizeProvider, 10);
+                new RecyclerViewPreloader<String>(this.getActivity(), modelProvider, sizeProvider, maxPreloadCount);
         rvCats.addOnScrollListener(preloader);
     }
 
@@ -141,13 +136,33 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
         });
     }
 
+    private void subscribeToDownloadManager() {
+        getActivity().registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    private void getInitData() {
+        allCatsPresenter.getAllCats();
+        allCatsPresenter.subscribeToNextCats();
+    }
+
+
+    private void onDownloadClick(CatUI catUI) {
+        //save cat to variable due to permissions check
+        allCatsPresenter.setTempImageDownloadCat(catUI);
+        if (allCatsPresenter.checkPermissionsRequired()) {
+            checkForPermission();
+        } else {
+            allCatsPresenter.downloadImage();
+        }
+    }
+
     private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             for (CatUI catUI : allCatsAdapter.getItems()) {
                 if (catUI.getTempDownloadId() != 0 && catUI.getTempDownloadId() == id) {
-                    Toast.makeText(getActivity(), "Картинка успешно загружена", Toast.LENGTH_SHORT).show();
+                    onSuccessImageDownload();
                 }
             }
         }
@@ -155,7 +170,6 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
 
     @Override
     public void onSuccessLoading(List<CatUI> cats) {
-        setCatsImagesParams(cats);
         groupCats.setVisibility(View.VISIBLE);
         allCatsAdapter.refreshData(cats);
         if (savedInstanceState != null) {
@@ -191,22 +205,22 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
 
     @Override
     public void onErrorAddToFavorites() {
-        Toast.makeText(getActivity(), "Не удалось сохранить кота в избранное", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.cant_save_to_favorites), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStartImageDownload() {
-        Toast.makeText(getActivity(), "Загрузка картинки начата", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.image_load_start), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSuccessImageDownload() {
-        Toast.makeText(getActivity(), "Картинка успешно загружена в папку Downloads", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.image_load_success), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onErrorImageDownload() {
-        Toast.makeText(getActivity(), "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.error_load_image), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -221,12 +235,11 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
 
     @Override
     public void onErrorRefreshing() {
-        Toast.makeText(getActivity(), "Не удалоcь обновить котов", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.error_refresh_cats), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSuccessNextLoading(List<CatUI> cats) {
-        setCatsImagesParams(cats);
         allCatsAdapter.addData(cats);
     }
 
@@ -244,12 +257,12 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
 
     @Override
     public void onErrorNextLoading() {
-        Toast.makeText(getActivity(), "Не удалоcь обновить котов", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.error_get_next_cats), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSuccessAddToFavorites() {
-        Toast.makeText(getActivity(), "Картинка успешно сохранена в избранное", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.success_saving_favorites), Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.ibRetry)
@@ -257,14 +270,6 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
         allCatsPresenter.getAllCats();
     }
 
-    private void setCatsImagesParams(List<CatUI> cats) {
-        int screenWidth = ViewUtils.getScreenWidth(getActivity());
-        for (CatUI catUI : cats) {
-            catUI.setScreenImageWidth(screenWidth);
-            catUI.setScreenImageHeight(ViewUtils.countAspectRatioHeight(screenWidth,
-                    catUI.getImageHeight(), catUI.getImageWidth()));
-        }
-    }
 
     public void checkForPermission() {
         if (isPermissionGranted()) {
@@ -279,7 +284,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
     }
 
     private void requestRuntimePermission() {
-        EasyPermissions.requestPermissions(this, "Пожалуйста дайте разрешение, чтобы скачать эту картинку с котиками",
+        EasyPermissions.requestPermissions(this, getString(R.string.give_permission_load),
                 REQUEST_PERMISSION_CODE, WRITE_PERMISSION);
     }
 

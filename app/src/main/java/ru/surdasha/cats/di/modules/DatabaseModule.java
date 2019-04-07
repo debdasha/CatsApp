@@ -1,32 +1,28 @@
-package ru.surdasha.cats.di;
+package ru.surdasha.cats.di.modules;
 
 import android.content.Context;
 
-import javax.inject.Singleton;
+import javax.inject.Named;
 
 import androidx.room.Room;
 import dagger.Module;
 import dagger.Provides;
 import ru.surdasha.cats.data.db.CatDao;
 import ru.surdasha.cats.data.db.CatDatabase;
+import ru.surdasha.cats.di.scopes.PerApplication;
 
 @Module
 public class DatabaseModule {
-    private CatDatabase catDatabase;
 
-    public DatabaseModule(Context context) {
-        catDatabase = Room.databaseBuilder(context,
+    @Provides
+    @PerApplication
+    CatDatabase provideDatabase(@Named("AppContext") Context context){
+        return Room.databaseBuilder(context,
                 CatDatabase.class, "cats.db").build();
     }
 
     @Provides
-    @Singleton
-    CatDatabase provideDatabase(){
-        return catDatabase;
-    }
-
-    @Singleton
-    @Provides
+    @PerApplication
     CatDao providesProductDao(CatDatabase demoDatabase) {
         return demoDatabase.catDao();
     }

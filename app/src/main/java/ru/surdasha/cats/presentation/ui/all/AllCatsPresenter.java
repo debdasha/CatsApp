@@ -11,7 +11,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import ru.surdasha.cats.CatApp;
+import ru.surdasha.cats.common.AndroidUtils;
 import ru.surdasha.cats.domain.usecases.AddCatUseCase;
 import ru.surdasha.cats.domain.usecases.DownloadImageUseCase;
 import ru.surdasha.cats.domain.usecases.GetAllCatsUseCase;
@@ -33,44 +33,42 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
     @Inject
     DownloadImageUseCase downloadImageUseCase;
     @Inject
+    AddCatUseCase addCatUseCase;
+    @Inject
     CatUIMapper catUIMapper;
     @Inject
-    AddCatUseCase addCatUseCase;
+    AndroidUtils androidUtils;
     private PublishProcessor<Integer> scrollProcessor = PublishProcessor.create();
     private final static int SCROLL_THRESHOLD = 2;
     private volatile boolean loading;
     private CatUI tempImageDownloadCat;
 
     public AllCatsPresenter() {
-        CatApp.getAppComponent().inject(this);
         compositeDisposable = new CompositeDisposable();
     }
 
     public void getAllCats() {
-        getViewState().onStartFirstLoading();
-        loading = true;
         Disposable disposable = getAllCatsUseCase.getAllCats()
-                .flattenAsObservable(cats -> cats)
-                .map(cat -> catUIMapper.domainToUI(cat))
-                .toList()
-                .toMaybe()
+                .map(cats -> catUIMapper.domainToUI(cats))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(cats -> {
-                    loading = false;
+                .doOnSubscribe(disposable1 -> {
+                    getViewState().onStartFirstLoading();
+                    setCurrentLoadingState(true);
+                })
+                .doOnTerminate(() -> {
+                    setCurrentLoadingState(false);
                     getViewState().onEndFirstLoading();
+                })
+                .subscribe(cats -> {
                     if (cats.isEmpty()) {
                         getViewState().onEmptyList();
                     } else {
                         getViewState().onSuccessLoading(cats);
                     }
                 }, throwable -> {
-                    loading = false;
-                    getViewState().onEndFirstLoading();
                     getViewState().onErrorFirstLoading();
                 }, () -> {
-                    loading = false;
-                    getViewState().onEndFirstLoading();
                     getViewState().onEmptyList();
                 });
         compositeDisposable.add(disposable);
@@ -78,30 +76,28 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
 
     public void refreshCats() {
         unsubscribe();
-        getViewState().onStartRefreshing();
-        loading = true;
         Disposable disposable = refreshCatsUseCase.getRefreshedCats()
-                .flattenAsObservable(cats -> cats)
-                .map(cat -> catUIMapper.domainToUI(cat))
-                .toList()
-                .toMaybe()
-                .doOnComplete(() -> {
-                })
+                .map(cats -> catUIMapper.domainToUI(cats))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(cats -> {
+                .doOnSubscribe(disposable1 ->  {
+                    setCurrentLoadingState(true);
+                    getViewState().onStartRefreshing();
+                })
+                .doOnTerminate(() -> {
+                    setCurrentLoadingState(false);
                     getViewState().onEndRefreshing();
-                    loading = false;
-                    getViewState().onSuccessLoading(cats);
+                })
+                .subscribe(cats -> {
+                    if (cats.isEmpty()) {
+                        getViewState().onEmptyList();
+                    } else {
+                        getViewState().onSuccessLoading(cats);
+                    }
                     subscribeToNextCats();
                 }, throwable -> {
-                    loading = false;
                     subscribeToNextCats();
-                    getViewState().onEndRefreshing();
                     getViewState().onErrorRefreshing();
-                }, () -> {
-                    loading = false;
-                    getViewState().onEndRefreshing();
                 });
         compositeDisposable.add(disposable);
     }
@@ -110,22 +106,23 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
         Disposable disposable = scrollProcessor
                 .onBackpressureDrop()
                 .concatMap(page -> {
-                    loading = true;
+                    setCurrentLoadingState(true);
                     getViewState().onStartNextLoading();
                     return getNextCatsUseCase.getNextCats()
                             .subscribeOn(Schedulers.io())
-                            .toFlowable();
+                            .toFlowable()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnTerminate(() -> {
+                                getViewState().onEndNextLoading();
+                                setCurrentLoadingState(false);
+                            });
                 })
                 .toObservable()
                 .map(cat -> catUIMapper.domainToUI(cat))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cats -> {
-                    getViewState().onEndNextLoading();
                     getViewState().onSuccessNextLoading(cats);
-                    loading = false;
                 }, throwable -> {
-                    loading = false;
-                    getViewState().onEndNextLoading();
                     getViewState().onErrorNextLoading();
                 });
         compositeDisposable.add(disposable);
@@ -133,7 +130,7 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
 
     public synchronized void onScrolled(int count, int lastVisibleItemIndex) {
         if (!loading && count <= (lastVisibleItemIndex + SCROLL_THRESHOLD)) {
-            loading = true;
+            setCurrentLoadingState(true);
             scrollProcessor.onNext(count);
         }
     }
@@ -157,7 +154,6 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
                     tempImageDownloadCat.setTempDownloadId(downloadId);
                     getViewState().onStartImageDownload();
                 }, throwable -> {
-                    tempImageDownloadCat = null;
                     getViewState().onErrorImageDownload();
                 });
         compositeDisposable.add(disposable);
@@ -167,7 +163,15 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
         this.tempImageDownloadCat = catUI;
     }
 
+    public boolean checkPermissionsRequired(){
+        return androidUtils.checkRequiredPermission();
+    }
+
     public void unsubscribe() {
         compositeDisposable.clear();
+    }
+
+    private void setCurrentLoadingState(boolean b) {
+        loading = b;
     }
 }

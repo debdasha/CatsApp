@@ -10,7 +10,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ru.surdasha.cats.CatApp;
 import ru.surdasha.cats.domain.usecases.DeleteCatUseCase;
 import ru.surdasha.cats.domain.usecases.GetFavoriteCatsUseCase;
 import ru.surdasha.cats.presentation.mappers.CatUIMapper;
@@ -29,16 +28,13 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
 
     public FavoriteCatsPresenter() {
         compositeDisposable = new CompositeDisposable();
-        CatApp.getAppComponent().inject(this);
+
     }
 
     public void getCats(){
         getViewState().onShowLoading();
         Disposable disposable = getFavoriteCatsUseCase.getFavoriteCats()
-                .flattenAsObservable(cats -> cats)
-                .map(cat -> catUIMapper.domainToUI(cat))
-                .toList()
-                .toMaybe()
+                .map(cats -> catUIMapper.domainToUI(cats))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cats -> {

@@ -3,12 +3,13 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "ru.surdasha.cats1"
+        applicationId "ru.surdasha.cats"
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -64,4 +65,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     //permissions
     implementation 'pub.devrel:easypermissions:3.0.0'
+    implementation 'com.jakewharton.rxbinding3:rxbinding-core:3.0.0-alpha2'
 }

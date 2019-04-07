@@ -1,15 +1,15 @@
-package ru.surdasha.cats.di;
+package ru.surdasha.cats.di.modules;
 
 import android.content.Context;
 
-import javax.inject.Singleton;
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import ru.surdasha.cats.di.scopes.PerApplication;
 
 @Module
 public class ContextModule {
-
     private Context context;
 
     public ContextModule(Context context) {
@@ -17,7 +17,8 @@ public class ContextModule {
     }
 
     @Provides
-    @Singleton
+    @PerApplication
+    @Named("AppContext")
     Context getContext() {
         return context;
     }

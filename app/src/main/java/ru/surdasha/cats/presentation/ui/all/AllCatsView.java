@@ -1,7 +1,8 @@
 package ru.surdasha.cats.presentation.ui.all;
 
 import com.arellomobile.mvp.MvpView;
-import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
+import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
+import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import java.util.List;
@@ -10,54 +11,54 @@ import ru.surdasha.cats.presentation.models.CatUI;
 
 public interface AllCatsView extends MvpView {
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(AddToEndSingleStrategy.class)
     void onSuccessLoading(List<CatUI> cats);
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onStartFirstLoading();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onEndFirstLoading();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(AddToEndSingleStrategy.class)
     void onErrorFirstLoading();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(AddToEndSingleStrategy.class)
     void onEmptyList();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onStartRefreshing();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onEndRefreshing();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onErrorRefreshing();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(AddToEndSingleStrategy.class)
     void onSuccessNextLoading(List<CatUI> cats);
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onStartNextLoading();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onEndNextLoading();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onErrorNextLoading();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onSuccessAddToFavorites();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onErrorAddToFavorites();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onStartImageDownload();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onSuccessImageDownload();
 
-    @StateStrategyType(AddToEndStrategy.class)
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onErrorImageDownload();
 }

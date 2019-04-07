@@ -1,6 +1,6 @@
 package ru.surdasha.cats.data.mappers;
 
-import ru.surdasha.cats.data.db.CatDb;
+import ru.surdasha.cats.data.db.models.CatDb;
 import ru.surdasha.cats.data.remote.models.CatRemote;
 import ru.surdasha.cats.domain.models.Cat;
 
@@ -26,7 +26,6 @@ public class CatMapper {
 
     public CatDb domainToDb(Cat cat){
         CatDb catDb = new CatDb();
-        catDb.setId(cat.getId());
         catDb.setServerId(cat.getServerId());
         catDb.setUrl(cat.getUrl());
         catDb.setImageHeight(cat.getImageHeight());
@@ -36,7 +35,6 @@ public class CatMapper {
 
     public Cat dbToDomain(CatDb catDb){
         Cat cat = new Cat();
-        cat.setId(catDb.getId());
         cat.setServerId(catDb.getServerId());
         cat.setUrl(catDb.getUrl());
         cat.setImageHeight(catDb.getImageHeight());

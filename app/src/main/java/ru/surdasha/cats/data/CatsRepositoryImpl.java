@@ -7,8 +7,8 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import ru.surdasha.cats.data.db.DbSource;
 import ru.surdasha.cats.data.mappers.CatMapper;
-import ru.surdasha.cats.data.remote.MemorySource;
-import ru.surdasha.cats.data.remote.NetworkSource;
+import ru.surdasha.cats.data.remote.interfaces.MemorySource;
+import ru.surdasha.cats.data.remote.interfaces.NetworkSource;
 import ru.surdasha.cats.domain.CatRepository;
 import ru.surdasha.cats.domain.models.Cat;
 
@@ -16,12 +16,13 @@ public class CatsRepositoryImpl implements CatRepository {
     private final NetworkSource networkSource;
     private final CatMapper catMapper;
     private final DbSource dbSource;
-    private MemorySource memoryCatsCache = new MemorySource();
+    private MemorySource memorySource;
 
-    public CatsRepositoryImpl(NetworkSource networkSource, CatMapper catMapper, DbSource dbSource) {
+    public CatsRepositoryImpl(NetworkSource networkSource, CatMapper catMapper, DbSource dbSource, MemorySource memorySource) {
         this.networkSource = networkSource;
         this.catMapper = catMapper;
         this.dbSource = dbSource;
+        this.memorySource = memorySource;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class CatsRepositoryImpl implements CatRepository {
 
     @Override
     public Maybe<List<Cat>> getAllCats() {
-        return memoryCatsCache
+        return memorySource
                 .getCats()
                 .flatMapMaybe(remotes -> {
                     if (remotes.isEmpty()){
@@ -53,7 +54,7 @@ public class CatsRepositoryImpl implements CatRepository {
 
     @Override
     public Maybe<List<Cat>> getFavoriteCats() {
-        return dbSource.getAll()
+        return dbSource.getCats()
                 .flattenAsObservable(catDbs -> catDbs)
                 .map(catDb -> catMapper.dbToDomain(catDb))
                 .toList()
@@ -64,7 +65,7 @@ public class CatsRepositoryImpl implements CatRepository {
     public Maybe<List<Cat>> getNextCats() {
         return networkSource.getCats()
                 .flatMap(newCats -> {
-                    return memoryCatsCache.addCats(newCats)
+                    return memorySource.addCats(newCats)
                             .andThen(Maybe.just(newCats));
                 })
                 .flattenAsObservable(catRemotes -> catRemotes)
@@ -75,7 +76,7 @@ public class CatsRepositoryImpl implements CatRepository {
 
     @Override
     public Completable deleteCats() {
-        return memoryCatsCache.deleteCats();
+        return memorySource.deleteCats();
     }
 
     @Override

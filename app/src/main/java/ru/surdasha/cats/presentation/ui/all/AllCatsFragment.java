@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,14 +25,11 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.Group;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.OnClick;
-import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 import ru.surdasha.cats.R;
@@ -147,7 +143,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             for (CatUI catUI : allCatsAdapter.getItems()) {
                 if (catUI.getTempDownloadId() != 0 && catUI.getTempDownloadId() == id) {
-                    Toast.makeText(getActivity(), "Картинка успешно загружена", Toast.LENGTH_SHORT).show();
+                    onSuccessImageDownload();
                 }
             }
         }
@@ -191,22 +187,22 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
 
     @Override
     public void onErrorAddToFavorites() {
-        Toast.makeText(getActivity(), "Не удалось сохранить кота в избранное", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.cant_save_to_favorites), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStartImageDownload() {
-        Toast.makeText(getActivity(), "Загрузка картинки начата", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.image_load_start), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSuccessImageDownload() {
-        Toast.makeText(getActivity(), "Картинка успешно загружена в папку Downloads", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.image_load_success), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onErrorImageDownload() {
-        Toast.makeText(getActivity(), "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.error_load_image), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -221,7 +217,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
 
     @Override
     public void onErrorRefreshing() {
-        Toast.makeText(getActivity(), "Не удалоcь обновить котов", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.error_refresh_cats), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -244,12 +240,12 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
 
     @Override
     public void onErrorNextLoading() {
-        Toast.makeText(getActivity(), "Не удалоcь обновить котов", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.error_get_next_cats), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSuccessAddToFavorites() {
-        Toast.makeText(getActivity(), "Картинка успешно сохранена в избранное", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.success_saving_favorites), Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.ibRetry)
@@ -279,7 +275,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
     }
 
     private void requestRuntimePermission() {
-        EasyPermissions.requestPermissions(this, "Пожалуйста дайте разрешение, чтобы скачать эту картинку с котиками",
+        EasyPermissions.requestPermissions(this, getString(R.string.give_permission_load),
                 REQUEST_PERMISSION_CODE, WRITE_PERMISSION);
     }
 

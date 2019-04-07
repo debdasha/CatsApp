@@ -1,11 +1,20 @@
 <resources>
     <string name="app_name">Cats</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_home">Все</string>
+    <string name="title_dashboard">Избранное</string>
     <string name="title_notifications">Notifications</string>
     <string name="loading_cats">Загружаем кошечек, пожалуйста подождите</string>
     <string name="error_loading">Возникла ошибка при попытке получить кошечек. Попробуйте еще раз</string>
     <string name="no_cats">Нет кошечек, совсем ничего нет</string>
     <string name="no_favorite_cats">Еще нет избранных кошечек, но Вы можете их добавить</string>
     <string name="retry">Попробовать еще раз</string>
+    <string name="image_load_success">Картинка успешно загружена</string>
+    <string name="cant_save_to_favorites">Не удалось сохранить кота в избранное</string>
+    <string name="image_load_start">Загрузка картинки начата</string>
+    <string name="error_load_image">Не удалось загрузить картинку</string>
+    <string name="error_refresh_cats">Не удалоcь обновить котов</string>
+    <string name="error_get_next_cats">Не удалоcь обновить котов</string>
+    <string name="success_saving_favorites">Картинка успешно сохранена в избранное</string>
+    <string name="give_permission_load">Пожалуйста дайте разрешение, чтобы скачать эту картинку с котиками</string>
+    <string name="error_delete_cat">Не удалось удалить котика</string>
 </resources>

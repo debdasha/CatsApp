@@ -87,13 +87,12 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
 
     @Override
     public void onShowErrorDeleting() {
-        Toast.makeText(getActivity(), "Не удалось удалить котика", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.error_delete_cat), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onShowSuccessDeleting(CatUI catUI) {
         favoriteCatsAdapter.deleteData(catUI);
-        Toast.makeText(getActivity(), "Удалили котика", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.ibRetry)

@@ -7,8 +7,9 @@ import ru.surdasha.cats.presentation.ui.all.AllCatsPresenter;
 import ru.surdasha.cats.presentation.ui.favorites.FavoriteCatsPresenter;
 
 @Singleton
-@Component(modules = {NetworkModule.class, CatMainModule.class, ContextModule.class,
-        DatabaseModule.class, DownloadManagerModule.class})
+@Component(modules = {ContextModule.class,
+        DataModule.class, DomainModule.class,
+        UIModule.class})
 public interface AppComponent {
     void inject(AllCatsPresenter allCatsPresenter);
     void inject(FavoriteCatsPresenter favoriteCatsPresenter);

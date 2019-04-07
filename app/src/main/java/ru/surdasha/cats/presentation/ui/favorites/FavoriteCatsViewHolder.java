@@ -1,6 +1,6 @@
 package ru.surdasha.cats.presentation.ui.favorites;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -33,7 +33,7 @@ public class FavoriteCatsViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bind(Context context, final CatUI model, final FavoriteCatsAdapter.onDeleteCatListener listener) {
+    public void bind(Activity context, final CatUI model, final FavoriteCatsAdapter.onDeleteCatListener listener) {
         RxView.clicks(ibDelete)
                 .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(unit -> listener.onDeleteCat(model));
@@ -41,7 +41,7 @@ public class FavoriteCatsViewHolder extends RecyclerView.ViewHolder {
         showWithGlide(context, model);
     }
 
-    private void showWithGlide(Context context, CatUI model) {
+    private void showWithGlide(Activity context, CatUI model) {
         GlideApp.with(context)
                 .load(model.getUrl())
                 .placeholder(ViewUtils.createCircularImageDrawable(context))

@@ -1,5 +1,6 @@
 package ru.surdasha.cats.presentation.ui.favorites;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +20,11 @@ public class FavoriteCatsAdapter extends
 
     private static final String TAG = FavoriteCatsAdapter.class.getSimpleName();
 
-    private Context context;
+    private Activity context;
     private List<CatUI> list = new ArrayList<>();
     private onDeleteCatListener onDeleteCatListener;
 
-    public FavoriteCatsAdapter(Context context,
+    public FavoriteCatsAdapter(Activity context,
                                onDeleteCatListener onDeleteCatListener) {
         this.context = context;
         this.onDeleteCatListener = onDeleteCatListener;

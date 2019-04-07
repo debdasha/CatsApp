@@ -1,7 +1,6 @@
 package ru.surdasha.cats.presentation.ui.all;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -48,7 +47,7 @@ public class AllCatsViewHolder extends RecyclerView.ViewHolder {
         showWithGlide(context, model);
     }
 
-    private void showWithGlide(Context context, CatUI model) {
+    private void showWithGlide(Activity context, CatUI model) {
         GlideApp.with(context)
                 .load(model.getUrl())
                 .placeholder(ViewUtils.createCircularImageDrawable(context))

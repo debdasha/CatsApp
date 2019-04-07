@@ -1,7 +1,6 @@
 package ru.surdasha.cats.presentation.misc;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.DisplayMetrics;
 
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
@@ -20,7 +19,7 @@ public class ViewUtils {
         return newImageHeight;
     }
 
-    public static CircularProgressDrawable createCircularImageDrawable(Context context) {
+    public static CircularProgressDrawable createCircularImageDrawable(Activity context) {
         CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(context);
         circularProgressDrawable.setStrokeWidth(3f);
         circularProgressDrawable.setCenterRadius(20f);

@@ -10,7 +10,6 @@ public class CatUIMapper {
 
     public CatUI domainToUI(Cat cat){
         CatUI catUI = new CatUI();
-        catUI.setId(cat.getId());
         catUI.setServerId(cat.getServerId());
         catUI.setUrl(cat.getUrl());
         catUI.setImageHeight(cat.getImageHeight());
@@ -20,7 +19,6 @@ public class CatUIMapper {
 
     public Cat uiToDomain(CatUI catUI){
         Cat cat = new Cat();
-        cat.setId(catUI.getId());
         cat.setServerId(catUI.getServerId());
         cat.setUrl(catUI.getUrl());
         cat.setImageHeight(catUI.getImageHeight());

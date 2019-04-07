@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
-import com.bumptech.glide.util.FixedPreloadSizeProvider;
 
 import java.util.List;
 
@@ -98,12 +97,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
     private void setUpAdapter() {
         allCatsAdapter = new AllCatsAdapter(getActivity());
         allCatsAdapter.setOnDownloadClickListener(catUI -> {
-            allCatsPresenter.setTempImageDownloadCat(catUI);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                checkForPermission();
-            } else {
-                allCatsPresenter.downloadImage();
-            }
+            onDownloadClick(catUI);
         });
         allCatsAdapter.setOnLikeClickListener(catUI -> {
             allCatsPresenter.addToFavorite(catUI);
@@ -114,13 +108,12 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
     }
 
     private void setUpPreload() {
-        final int imageWidthPixels = 1024;
-        final int imageHeightPixels = 768;
+        final int maxPreloadCount = 10;
         ListPreloader.PreloadSizeProvider sizeProvider =
-                new FixedPreloadSizeProvider(imageWidthPixels, imageHeightPixels);
+                new CatsPreloadSizeProvider();
         ListPreloader.PreloadModelProvider modelProvider = new AllCatsPreloadModelProvider(getActivity(), allCatsAdapter.getItems());
         RecyclerViewPreloader<String> preloader =
-                new RecyclerViewPreloader<String>(this.getActivity(), modelProvider, sizeProvider, 10);
+                new RecyclerViewPreloader<String>(this.getActivity(), modelProvider, sizeProvider, maxPreloadCount);
         rvCats.addOnScrollListener(preloader);
     }
 
@@ -135,6 +128,15 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
                 );
             }
         });
+    }
+
+    private void onDownloadClick(CatUI catUI) {
+        allCatsPresenter.setTempImageDownloadCat(catUI);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkForPermission();
+        } else {
+            allCatsPresenter.downloadImage();
+        }
     }
 
     private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {

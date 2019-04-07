@@ -2,7 +2,8 @@ package ru.surdasha.cats.data.remote;
 
 import android.app.DownloadManager;
 import android.net.Uri;
-import android.util.Log;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
@@ -16,7 +17,8 @@ import ru.surdasha.cats.data.remote.models.CatRemote;
 public class NetworkSource {
     @NonNull
     private final CatRemoteInterface catRemoteInterface;
-    DownloadManager downloadManager;
+    @NonNull
+    private final DownloadManager downloadManager;
     private final int catsPageCount = 10;
     private final int DEFAULT_PAGE = 1;
     private int currentPageNumber = DEFAULT_PAGE;
@@ -29,7 +31,6 @@ public class NetworkSource {
     public Maybe<List<CatRemote>> getCats(){
         return catRemoteInterface.getCats(catsPageCount, currentPageNumber)
                 .map(catRemotes -> {
-                    Log.d("CurrentPage", String.valueOf(currentPageNumber));
                     currentPageNumber++;
                     return catRemotes;
                 });
@@ -37,21 +38,41 @@ public class NetworkSource {
 
     public Single<Long> downloadImage(CatRemote catRemote){
         return Single.fromCallable(() -> {
-            String fileName = catRemote.getId() + ".jpg";
-            File file = AndroidUtils.getDownloadsFolder();
-            if (!file.exists()){
-                file.mkdir();
-            }
-            File imageFile = new File(file.getAbsolutePath() + "/" +fileName);
             DownloadManager.Request request=new DownloadManager.Request(Uri.parse(catRemote.getUrl()))
-                    .setTitle("Cats")
-                    .setDescription("Скачиваем картинку")
-                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-                    .setDestinationUri(Uri.fromFile(imageFile))
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+                    .setDestinationUri(getImageFileUri(catRemote))
                     .setAllowedOverMetered(true)
                     .setAllowedOverRoaming(true);
             long downloadID = downloadManager.enqueue(request);
             return downloadID;
         });
+    }
+
+    private Uri getImageFileUri(CatRemote catRemote){
+        return Uri.fromFile(createImageFile(catRemote));
+    }
+
+    @NotNull
+    private File createImageFile(CatRemote catRemote) {
+        final String filePathFormat = "%s/%s";
+        String fileName = createImageFileName(catRemote);
+        String downloadFolderPath = getDestinationFolderPath();
+        File imageFile = new  File(String.format(filePathFormat, downloadFolderPath, fileName));
+        return imageFile;
+    }
+
+    @NotNull
+    private String getDestinationFolderPath() {
+        File downloadFolder = AndroidUtils.getDownloadsFolder();
+        if (!downloadFolder.exists()){
+            downloadFolder.mkdir();
+        }
+        return downloadFolder.getAbsolutePath();
+    }
+
+    @NotNull
+    private String createImageFileName(CatRemote catRemote) {
+        final String fileNameFormat = "%s.jpg";
+        return String.format(fileNameFormat,catRemote.getId());
     }
 }

@@ -12,17 +12,12 @@ import ru.surdasha.cats.data.db.CatDatabase;
 
 @Module
 public class DatabaseModule {
-    private CatDatabase catDatabase;
-
-    public DatabaseModule(Context context) {
-        catDatabase = Room.databaseBuilder(context,
-                CatDatabase.class, "cats.db").build();
-    }
 
     @Provides
     @Singleton
-    CatDatabase provideDatabase(){
-        return catDatabase;
+    CatDatabase provideDatabase(Context context){
+        return Room.databaseBuilder(context,
+                CatDatabase.class, "cats.db").build();
     }
 
     @Singleton

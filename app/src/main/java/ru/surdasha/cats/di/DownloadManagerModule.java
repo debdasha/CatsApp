@@ -5,21 +5,18 @@ import android.content.Context;
 
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 
 @Module
 public class DownloadManagerModule {
-    private DownloadManager downloadManager;
-
-    public DownloadManagerModule(Context context) {
-        downloadManager =  (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-    }
 
     @Provides
     @Singleton
-    DownloadManager provideDatabase(){
-        return downloadManager;
+    @NonNull
+    public DownloadManager provideDownloadManager(Context context){
+        return (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
     }
 
 }

@@ -1,6 +1,6 @@
 package ru.surdasha.cats.presentation.ui.all;
 
-import android.content.Context;
+import android.app.Activity;
 import android.text.TextUtils;
 
 import com.bumptech.glide.ListPreloader;
@@ -17,9 +17,9 @@ import ru.surdasha.cats.presentation.models.CatUI;
 
 public class AllCatsPreloadModelProvider implements ListPreloader.PreloadModelProvider<CatUI> {
     private List<CatUI> catUIS;
-    private Context context;
+    private Activity context;
 
-    public AllCatsPreloadModelProvider(Context context, List<CatUI> catUIS){
+    public AllCatsPreloadModelProvider(Activity context, List<CatUI> catUIS){
         this.catUIS = catUIS;
         this.context = context;
     }

@@ -1,4 +1,4 @@
-package ru.surdasha.cats.data.db;
+package ru.surdasha.cats.data.db.models;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;

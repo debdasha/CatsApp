@@ -3,10 +3,19 @@ package ru.surdasha.cats.presentation.mappers;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.surdasha.cats.common.Utils;
 import ru.surdasha.cats.domain.models.Cat;
+import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 
 public class CatUIMapper {
+    private final ViewUtils viewUtils;
+    private final Utils utils;
+
+    public CatUIMapper(ViewUtils viewUtils, Utils utils) {
+        this.viewUtils = viewUtils;
+        this.utils = utils;
+    }
 
     public CatUI domainToUI(Cat cat){
         CatUI catUI = new CatUI();
@@ -14,6 +23,10 @@ public class CatUIMapper {
         catUI.setUrl(cat.getUrl());
         catUI.setImageHeight(cat.getImageHeight());
         catUI.setImageWidth(cat.getImageWidth());
+        int screenWidth = viewUtils.getScreenWidth();
+        catUI.setScreenImageWidth(screenWidth);
+        catUI.setScreenImageHeight(utils.countAspectRatioHeight(screenWidth,
+                catUI.getImageHeight(), catUI.getImageWidth()));
         return catUI;
     }
 

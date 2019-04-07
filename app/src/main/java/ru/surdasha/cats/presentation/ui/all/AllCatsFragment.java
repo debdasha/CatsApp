@@ -116,7 +116,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPe
     private void setUpPreload() {
         final int maxPreloadCount = 10;
         ListPreloader.PreloadSizeProvider sizeProvider =
-                new CatsPreloadSizeProvider();
+                new AllCatsPreloadSizeProvider();
         ListPreloader.PreloadModelProvider modelProvider = new AllCatsPreloadModelProvider(getActivity(), allCatsAdapter.getItems());
         RecyclerViewPreloader<String> preloader =
                 new RecyclerViewPreloader<String>(this.getActivity(), modelProvider, sizeProvider, maxPreloadCount);

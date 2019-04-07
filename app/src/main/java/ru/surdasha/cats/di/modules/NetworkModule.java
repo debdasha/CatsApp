@@ -10,8 +10,8 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import ru.surdasha.cats.data.remote.CatRemoteInterface;
 import ru.surdasha.cats.data.remote.RequestInterceptor;
+import ru.surdasha.cats.data.remote.interfaces.CatRemoteInterface;
 import ru.surdasha.cats.di.scopes.PerApplication;
 
 @Module

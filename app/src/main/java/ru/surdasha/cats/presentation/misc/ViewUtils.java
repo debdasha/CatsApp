@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.util.DisplayMetrics;
 
 public class ViewUtils {
-    Activity activity;
+    private Activity activity;
 
     public ViewUtils(Activity context){
         this.activity = context;
@@ -17,9 +17,6 @@ public class ViewUtils {
         return width;
     }
 
-    public int countAspectRatioHeight(int screenWidth, int imageHeight, int imageWidth){
-        int newImageHeight = imageHeight * screenWidth / imageWidth;
-        return newImageHeight;
-    }
+
 
 }

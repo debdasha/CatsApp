@@ -12,9 +12,11 @@ import androidx.annotation.NonNull;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import ru.surdasha.cats.common.AndroidUtils;
+import ru.surdasha.cats.data.remote.interfaces.CatRemoteInterface;
+import ru.surdasha.cats.data.remote.interfaces.NetworkSource;
 import ru.surdasha.cats.data.remote.models.CatRemote;
 
-public class NetworkSource {
+public class NetworkSourceImpl implements NetworkSource {
     private final CatRemoteInterface catRemoteInterface;
     private final DownloadManager downloadManager;
     private final AndroidUtils androidUtils;
@@ -22,13 +24,14 @@ public class NetworkSource {
     private final int DEFAULT_PAGE = 1;
     private int currentPageNumber = DEFAULT_PAGE;
 
-    public NetworkSource(@NonNull CatRemoteInterface catRemoteInterface, DownloadManager downloadManager,
-                         AndroidUtils androidUtils){
+    public NetworkSourceImpl(@NonNull CatRemoteInterface catRemoteInterface, DownloadManager downloadManager,
+                             AndroidUtils androidUtils){
         this.catRemoteInterface = catRemoteInterface;
         this.downloadManager = downloadManager;
         this.androidUtils = androidUtils;
     }
 
+    @Override
     public Maybe<List<CatRemote>> getCats(){
         return catRemoteInterface.getCats(catsPageCount, currentPageNumber)
                 .map(catRemotes -> {
@@ -37,6 +40,7 @@ public class NetworkSource {
                 });
     }
 
+    @Override
     public Single<Long> downloadImage(CatRemote catRemote){
         return Single.fromCallable(() -> {
             DownloadManager.Request request=new DownloadManager.Request(Uri.parse(catRemote.getUrl()))
@@ -49,6 +53,7 @@ public class NetworkSource {
         });
     }
 
+    @NotNull
     private Uri getImageFileUri(CatRemote catRemote){
         return Uri.fromFile(createImageFile(catRemote));
     }

@@ -1,4 +1,4 @@
-package ru.surdasha.cats.data.remote;
+package ru.surdasha.cats.data.remote.interfaces;
 
 import java.util.List;
 

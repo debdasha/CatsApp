@@ -2,26 +2,15 @@ package ru.surdasha.cats.data.db;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
+import ru.surdasha.cats.data.db.models.CatDb;
 
-public class DbSource {
-    CatDao catDao;
+public interface DbSource {
 
-    public DbSource(@NonNull CatDao catDao){
-        this.catDao = catDao;
-    }
+    Completable addCat(CatDb cat);
 
-    public Completable addCat(CatDb cat){
-        return catDao.add(cat);
-    }
+    Completable deleteCat(CatDb catDb);
 
-    public Completable deleteCat(CatDb catDb){
-        return catDao.delete(catDb);
-    }
-
-    public Maybe<List<CatDb>> getAll(){
-        return catDao.getAll();
-    }
+    Maybe<List<CatDb>> getCats();
 }

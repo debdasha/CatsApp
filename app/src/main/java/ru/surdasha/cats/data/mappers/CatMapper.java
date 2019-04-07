@@ -1,6 +1,6 @@
 package ru.surdasha.cats.data.mappers;
 
-import ru.surdasha.cats.data.db.CatDb;
+import ru.surdasha.cats.data.db.models.CatDb;
 import ru.surdasha.cats.data.remote.models.CatRemote;
 import ru.surdasha.cats.domain.models.Cat;
 

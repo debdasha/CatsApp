@@ -3,8 +3,6 @@ package ru.surdasha.cats.presentation.ui.favorites;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
@@ -15,7 +13,6 @@ import io.reactivex.schedulers.Schedulers;
 import ru.surdasha.cats.domain.usecases.DeleteCatUseCase;
 import ru.surdasha.cats.domain.usecases.GetFavoriteCatsUseCase;
 import ru.surdasha.cats.presentation.mappers.CatUIMapper;
-import ru.surdasha.cats.presentation.misc.ViewUtils;
 import ru.surdasha.cats.presentation.models.CatUI;
 
 @InjectViewState
@@ -28,8 +25,6 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
     DeleteCatUseCase deleteCatUseCase;
     @Inject
     CatUIMapper catUIMapper;
-    @Inject
-    ViewUtils viewUtils;
 
     public FavoriteCatsPresenter() {
         compositeDisposable = new CompositeDisposable();
@@ -39,10 +34,7 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
     public void getCats(){
         getViewState().onShowLoading();
         Disposable disposable = getFavoriteCatsUseCase.getFavoriteCats()
-                .flattenAsObservable(cats -> cats)
-                .map(cat -> catUIMapper.domainToUI(cat))
-                .toList()
-                .toMaybe()
+                .map(cats -> catUIMapper.domainToUI(cats))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cats -> {
@@ -50,7 +42,6 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
                     if (cats.isEmpty()){
                         getViewState().onEmptyList();
                     }else{
-                        setCatsImagesParams(cats);
                         getViewState().onShowCats(cats);
                     }
                 },throwable -> {
@@ -72,15 +63,6 @@ public class FavoriteCatsPresenter extends MvpPresenter<FavoriteCatsView> {
                 },throwable -> {
                     getViewState().onShowErrorDeleting();
                 });
-    }
-
-    private void setCatsImagesParams(List<CatUI> cats) {
-        int screenWidth = viewUtils.getScreenWidth();
-        for (CatUI catUI : cats) {
-            catUI.setScreenImageWidth(screenWidth);
-            catUI.setScreenImageHeight(viewUtils.countAspectRatioHeight(screenWidth,
-                    catUI.getImageHeight(), catUI.getImageWidth()));
-        }
     }
 
     public void unsubscribe(){

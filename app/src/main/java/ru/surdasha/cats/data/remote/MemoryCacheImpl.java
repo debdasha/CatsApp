@@ -3,25 +3,30 @@ package ru.surdasha.cats.data.remote;
 import java.util.LinkedList;
 import java.util.List;
 
+import ru.surdasha.cats.data.remote.interfaces.MemoryCache;
 import ru.surdasha.cats.data.remote.models.CatRemote;
 
-public class MemoryCatsCache {
+public class MemoryCacheImpl implements MemoryCache {
     private final int MAX_SIZE = 100;
     private List<CatRemote> cats = new LinkedList<>();
 
+    @Override
     public List<CatRemote> getCats(){
         return cats;
     }
 
+    @Override
     public boolean isEmpty(){
         return cats.isEmpty();
     }
 
+    @Override
     public void addCats(List<CatRemote> remotes){
         checkCacheSize();
         cats.addAll(remotes);
     }
 
+    @Override
     public void clearCache(){
         cats.clear();
     }

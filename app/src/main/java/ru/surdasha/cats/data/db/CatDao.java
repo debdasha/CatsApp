@@ -9,6 +9,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
+import ru.surdasha.cats.data.db.models.CatDb;
 
 @Dao
 public interface CatDao {

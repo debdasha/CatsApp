@@ -8,6 +8,7 @@ import javax.inject.Named;
 import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
+import ru.surdasha.cats.common.Utils;
 import ru.surdasha.cats.di.scopes.PerActivity;
 import ru.surdasha.cats.presentation.mappers.CatUIMapper;
 import ru.surdasha.cats.presentation.misc.ViewUtils;
@@ -42,8 +43,8 @@ public class UIModule {
     @NonNull
     @PerActivity
     @Provides
-    CatUIMapper provideCatUIMapper() {
-        return new CatUIMapper();
+    CatUIMapper provideCatUIMapper(ViewUtils viewUtils, Utils utils) {
+        return new CatUIMapper(viewUtils, utils);
     }
 
 }

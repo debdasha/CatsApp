@@ -12,8 +12,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.surdasha.cats.R;
 import ru.surdasha.cats.presentation.GlideApp;
-import ru.surdasha.cats.presentation.models.CatUI;
 import ru.surdasha.cats.presentation.misc.ViewUtils;
+import ru.surdasha.cats.presentation.models.CatUI;
 
 public class AllCatsViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.ivCat)

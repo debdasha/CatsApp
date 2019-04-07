@@ -38,8 +38,8 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
     AddCatUseCase addCatUseCase;
     private PublishProcessor<Integer> scrollProcessor = PublishProcessor.create();
     private final static int SCROLL_THRESHOLD = 2;
-
     private volatile boolean loading;
+    private CatUI tempImageDownloadCat;
 
     public AllCatsPresenter() {
         CatApp.getAppComponent().inject(this);
@@ -150,15 +150,21 @@ public class AllCatsPresenter extends MvpPresenter<AllCatsView> {
         compositeDisposable.add(disposable);
     }
 
-    public void downloadImage(CatUI catUI) {
-        Disposable disposable = downloadImageUseCase.downloadImage(catUIMapper.uiToDomain(catUI))
+    public void downloadImage() {
+        Disposable disposable = downloadImageUseCase.downloadImage(catUIMapper.uiToDomain(tempImageDownloadCat))
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> {
+                .subscribe(downloadId -> {
+                    tempImageDownloadCat.setTempDownloadId(downloadId);
                     getViewState().onStartImageDownload();
                 }, throwable -> {
+                    tempImageDownloadCat = null;
                     getViewState().onErrorImageDownload();
                 });
         compositeDisposable.add(disposable);
+    }
+
+    public void setTempImageDownloadCat(CatUI catUI){
+        this.tempImageDownloadCat = catUI;
     }
 
     public void unsubscribe() {

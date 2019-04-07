@@ -1,10 +1,9 @@
-package ru.surdasha.cats.presentation.ui;
+package ru.surdasha.cats.presentation.misc;
 
 import android.os.Build;
 import android.os.Bundle;
 
 import com.arellomobile.mvp.MvpDelegate;
-import com.arellomobile.mvp.MvpFragment;
 
 import androidx.fragment.app.Fragment;
 

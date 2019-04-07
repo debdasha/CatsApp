@@ -1,5 +1,13 @@
 package ru.surdasha.cats.presentation.ui.all;
 
+import android.Manifest;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,21 +24,29 @@ import com.bumptech.glide.util.FixedPreloadSizeProvider;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.Group;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.OnClick;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 import ru.surdasha.cats.R;
 import ru.surdasha.cats.presentation.models.CatUI;
 import ru.surdasha.cats.presentation.ui.BaseFragment;
 import ru.surdasha.cats.presentation.misc.ViewUtils;
 
-public class AllCatsFragment extends BaseFragment implements AllCatsView {
+public class AllCatsFragment extends BaseFragment implements AllCatsView, EasyPermissions.PermissionCallbacks {
 
     private static final String STATE_POSITION_OFFSET = "STATE_POSITION_OFFSET";
     private static final String STATE_POSITION_INDEX = "STATE_POSITION_INDEX";
+    private static final int REQUEST_PERMISSION_CODE = 1;
+    private static final String WRITE_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
     @BindView(R.id.rvCats)
     RecyclerView rvCats;
     @InjectPresenter
@@ -58,7 +74,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     Bundle savedInstanceState;
 
     @Override
-    public void onCreate( Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
@@ -75,6 +91,7 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
         allCatsPresenter.getAllCats();
         allCatsPresenter.subscribeToNextCats();
         this.savedInstanceState = savedInstanceState;
+        getActivity().registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         return view;
     }
 
@@ -85,7 +102,12 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     private void setUpAdapter() {
         allCatsAdapter = new AllCatsAdapter(getActivity());
         allCatsAdapter.setOnDownloadClickListener(catUI -> {
-            allCatsPresenter.downloadImage(catUI);
+            allCatsPresenter.setTempImageDownloadCat(catUI);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                checkForPermission();
+            } else {
+                allCatsPresenter.downloadImage();
+            }
         });
         allCatsAdapter.setOnLikeClickListener(catUI -> {
             allCatsPresenter.addToFavorite(catUI);
@@ -118,6 +140,18 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
             }
         });
     }
+
+    private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            for (CatUI catUI : allCatsAdapter.getItems()) {
+                if (catUI.getTempDownloadId() != 0 && catUI.getTempDownloadId() == id) {
+                    Toast.makeText(getActivity(), "Картинка успешно загружена", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
 
     @Override
     public void onSuccessLoading(List<CatUI> cats) {
@@ -232,8 +266,41 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
         }
     }
 
+    public void checkForPermission() {
+        if (isPermissionGranted()) {
+            allCatsPresenter.downloadImage();
+        } else {
+            requestRuntimePermission();
+        }
+    }
+
+    private boolean isPermissionGranted() {
+        return EasyPermissions.hasPermissions(this.getActivity(), WRITE_PERMISSION);
+    }
+
+    private void requestRuntimePermission() {
+        EasyPermissions.requestPermissions(this, "Пожалуйста дайте разрешение, чтобы скачать эту картинку с котиками",
+                REQUEST_PERMISSION_CODE, WRITE_PERMISSION);
+    }
+
     @Override
-    public void onSaveInstanceState(Bundle bundle){
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        if (isPermissionGranted()) {
+            allCatsPresenter.downloadImage();
+        } else {
+            requestRuntimePermission();
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
         if (rvCats != null) {
             int index = layoutManager.findFirstVisibleItemPosition();
@@ -245,8 +312,15 @@ public class AllCatsFragment extends BaseFragment implements AllCatsView {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
+        getActivity().unregisterReceiver(onDownloadComplete);
         allCatsPresenter.unsubscribe();
     }
 }

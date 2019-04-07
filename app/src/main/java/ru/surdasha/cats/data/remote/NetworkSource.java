@@ -12,7 +12,6 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import ru.surdasha.cats.common.AndroidUtils;
 import ru.surdasha.cats.data.remote.models.CatRemote;
-import ru.surdasha.cats.presentation.models.CatUI;
 
 public class NetworkSource {
     @NonNull

@@ -1,7 +1,5 @@
 package ru.surdasha.cats.presentation.models;
 
-import java.util.Objects;
-
 public class CatUI {
     private long Id;
     private String serverId;
@@ -10,7 +8,8 @@ public class CatUI {
     private int imageWidth;
     private int screenImageWidth;
     private int screenImageHeight;
-    private boolean isFavorite;
+    private long tempDownloadId;
+
 
     public long getId() {
         return Id;
@@ -76,11 +75,11 @@ public class CatUI {
         return Id == catUI.Id;
     }
 
-    public boolean isFavorite() {
-        return isFavorite;
+    public long getTempDownloadId() {
+        return tempDownloadId;
     }
 
-    public void setFavorite(boolean favorite) {
-        isFavorite = favorite;
+    public void setTempDownloadId(long tempDownloadId) {
+        this.tempDownloadId = tempDownloadId;
     }
 }

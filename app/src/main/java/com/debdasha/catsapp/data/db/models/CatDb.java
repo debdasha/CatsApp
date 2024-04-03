@@ -18,20 +18,20 @@ public class CatDb {
     @ColumnInfo(name = "imageWidth")
     private int imageWidth;
 
-    public void setUrl(String url) {
-        this.url = url;
+    public String getServerId() {
+        return serverId;
     }
 
     public void setServerId(String serverId) {
         this.serverId = serverId;
     }
 
-    public String getServerId() {
-        return serverId;
-    }
-
     public String getUrl() {
         return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public int getImageHeight() {

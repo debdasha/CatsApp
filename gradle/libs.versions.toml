@@ -10,12 +10,10 @@ material = "1.11.0"
 swiperefreshlayout = "1.1.0"
 dagger = "2.50"
 rxjava2 = "2.2.21"
-rxandroid = "2.0.2"
+rxandroid = "2.1.1"
 glide = "4.15.1"
-moxy = "2.2.2"
 retrofit = "2.9.0"
 room = "2.6.1"
-butterknife = "10.1.0"
 easypermissions = "3.0.0"
 rxbinding = "3.0.0"
 
@@ -34,10 +32,6 @@ rxandroid = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = 
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 glide-recyclerview = { group = "com.github.bumptech.glide", name = "recyclerview-integration", version.ref = "glide" }
-moxy = { group = "com.github.moxy-community", name = "moxy", version.ref = "moxy" }
-moxy-compiler = { group = "com.github.moxy-community", name = "moxy-compiler", version.ref = "moxy" }
-moxy-androidx = { group = "com.github.moxy-community", name = "moxy-androidx", version.ref = "moxy" }
-moxy-material = { group = "com.github.moxy-community", name = "moxy-material", version.ref = "moxy" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 retrofit-adapter = { group = "com.squareup.retrofit2", name = "adapter-rxjava2", version.ref = "retrofit" }

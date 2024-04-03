@@ -7,12 +7,11 @@ import java.io.File;
 
 public class AndroidUtils {
 
-
-    public File getDownloadsFolder(){
+    public File getDownloadsFolder() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
     }
 
-    public boolean checkRequiredPermission(){
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    public boolean checkStoragePermissionRequired() {
+        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.P;
     }
 }

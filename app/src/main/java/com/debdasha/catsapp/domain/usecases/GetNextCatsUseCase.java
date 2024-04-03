@@ -1,10 +1,11 @@
 package com.debdasha.catsapp.domain.usecases;
 
+import com.debdasha.catsapp.domain.CatRepository;
+import com.debdasha.catsapp.domain.models.Cat;
+
 import java.util.List;
 
 import io.reactivex.Maybe;
-import com.debdasha.catsapp.domain.CatRepository;
-import com.debdasha.catsapp.domain.models.Cat;
 
 public class GetNextCatsUseCase {
 
@@ -14,7 +15,7 @@ public class GetNextCatsUseCase {
         this.catRepository = catRepository;
     }
 
-    public Maybe<List<Cat>> getNextCats(){
+    public Maybe<List<Cat>> getNextCats() {
         return catRepository.getNextCats();
     }
 }

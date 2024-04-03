@@ -1,15 +1,17 @@
 package com.debdasha.catsapp.data.db;
 
-import java.util.List;
-
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+
+import com.debdasha.catsapp.data.db.models.CatDb;
+
+import java.util.List;
+
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
-import com.debdasha.catsapp.data.db.models.CatDb;
 
 @Dao
 public interface CatDao {

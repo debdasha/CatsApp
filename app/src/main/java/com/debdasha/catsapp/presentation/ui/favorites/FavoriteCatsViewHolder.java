@@ -5,17 +5,18 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+
+import com.debdasha.catsapp.R;
+import com.debdasha.catsapp.presentation.GlideApp;
+import com.debdasha.catsapp.presentation.models.CatUI;
 import com.jakewharton.rxbinding3.view.RxView;
 
 import java.util.concurrent.TimeUnit;
 
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import com.debdasha.catsapp.R;
-import com.debdasha.catsapp.presentation.GlideApp;
-import com.debdasha.catsapp.presentation.models.CatUI;
 
 public class FavoriteCatsViewHolder extends RecyclerView.ViewHolder {
 

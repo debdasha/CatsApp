@@ -1,8 +1,9 @@
 package com.debdasha.catsapp.domain.usecases;
 
-import io.reactivex.Single;
 import com.debdasha.catsapp.domain.CatRepository;
 import com.debdasha.catsapp.domain.models.Cat;
+
+import io.reactivex.Single;
 
 public class DownloadImageUseCase {
     CatRepository catRepository;
@@ -11,7 +12,7 @@ public class DownloadImageUseCase {
         this.catRepository = catRepository;
     }
 
-    public Single<Long> downloadImage(Cat cat){
+    public Single<Long> downloadImage(Cat cat) {
         return catRepository.downloadImage(cat);
     }
 }

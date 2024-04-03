@@ -6,30 +6,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.util.List;
-
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import moxy.presenter.InjectPresenter;
 
 import com.debdasha.catsapp.R;
 import com.debdasha.catsapp.databinding.FragmentFavoriteCatsBinding;
 import com.debdasha.catsapp.presentation.models.CatUI;
 import com.debdasha.catsapp.presentation.ui.BaseFragment;
-import com.debdasha.catsapp.presentation.ui.main.MainActivity;
 
-public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsView {
+import java.util.List;
+
+import javax.inject.Inject;
+
+public class FavoriteCatsFragment extends BaseFragment {
     public static final String TAG = FavoriteCatsFragment.class.getSimpleName();
-    FavoriteCatsAdapter favoriteCatsAdapter;
-    @InjectPresenter
-    FavoriteCatsPresenter favoriteCatsPresenter;
-    LinearLayoutManager layoutManager;
-
+    @Inject
+    public ViewModelProvider.Factory viewModelFactory;
     FragmentFavoriteCatsBinding binding;
+    private FavoriteCatsAdapter favoriteCatsAdapter;
+    private FavoriteCatsViewModel viewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initViewModel();
+        subscribeToDataStates();
+        subscribeToData();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        viewModel.loadFavoriteCats();
     }
 
     @Override
@@ -37,33 +46,56 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentFavoriteCatsBinding.inflate(inflater, container, false);
-        bindBaseUI(binding.getRoot());
         setUpAdapter();
-        binding.ibRetry.setOnClickListener(view1 -> favoriteCatsPresenter.getCats());
+        binding.ibRetry.setOnClickListener(view1 -> viewModel.loadFavoriteCats());
         return binding.getRoot();
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-        ((MainActivity)getActivity()).getUIComponent().inject(favoriteCatsPresenter);
-        favoriteCatsPresenter.getCats();
+    private void initViewModel() {
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(FavoriteCatsViewModel.class);
+    }
+
+    private void subscribeToData() {
+        viewModel.getCatsList().observe(this, catUIS -> {
+            if (catUIS.isEmpty()) {
+                onEmptyList();
+            } else {
+                onShowCats(catUIS);
+            }
+        });
+        viewModel.getDeleteCat().observe(this, this::onShowSuccessDeleting);
+    }
+
+    private void subscribeToDataStates() {
+        viewModel.getCatsDeletingState().observe(this, state -> {
+            if (state.isError()) {
+                onShowErrorDeleting();
+            }
+        });
+        viewModel.getCatsLoadingState().observe(this, state -> {
+            if (state.isLoading()) {
+                onShowLoading();
+            } else {
+                onHideLoadingCats();
+                if (state.isError()) {
+                    onShowErrorLoading();
+                }
+            }
+        });
     }
 
     private void setUpAdapter() {
-        favoriteCatsAdapter = new FavoriteCatsAdapter(getActivity(), model -> favoriteCatsPresenter.deleteFromFavorite(model));
-        layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        favoriteCatsAdapter = new FavoriteCatsAdapter(getActivity(), model -> viewModel.deleteFavoriteCat(model));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         binding.rvCats.setLayoutManager(layoutManager);
         binding.rvCats.setAdapter(favoriteCatsAdapter);
     }
 
-    @Override
     public void onShowCats(List<CatUI> cats) {
         binding.groupCats.setVisibility(View.VISIBLE);
         favoriteCatsAdapter.refreshData(cats);
     }
 
-    @Override
     public void onShowLoading() {
         binding.groupError.setVisibility(View.GONE);
         binding.groupCats.setVisibility(View.GONE);
@@ -71,27 +103,22 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
         binding.groupLoading.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onHideLoad() {
+    public void onHideLoadingCats() {
         binding.groupLoading.setVisibility(View.GONE);
     }
 
-    @Override
     public void onShowErrorLoading() {
         binding.groupError.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void onEmptyList() {
         binding.groupEmpty.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void onShowErrorDeleting() {
         Toast.makeText(getActivity(), getString(R.string.error_delete_cat), Toast.LENGTH_SHORT).show();
     }
 
-    @Override
     public void onShowSuccessDeleting(CatUI catUI) {
         favoriteCatsAdapter.deleteData(catUI);
     }
@@ -100,6 +127,5 @@ public class FavoriteCatsFragment extends BaseFragment implements FavoriteCatsVi
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        favoriteCatsPresenter.unsubscribe();
     }
 }

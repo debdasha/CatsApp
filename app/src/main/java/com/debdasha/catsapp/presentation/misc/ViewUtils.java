@@ -4,19 +4,21 @@ import android.app.Activity;
 import android.util.DisplayMetrics;
 
 public class ViewUtils {
-    private Activity activity;
+    private final Activity activity;
 
-    public ViewUtils(Activity context){
+    public ViewUtils(Activity context) {
         this.activity = context;
     }
 
-    public int getScreenWidth(){
+    public int getScreenWidth() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels;
-        return width;
+        return displayMetrics.widthPixels;
     }
 
+    public int countAspectRatioHeight(int screenWidth, int imageHeight, int imageWidth) {
+        return imageHeight * screenWidth / imageWidth;
+    }
 
 
 }

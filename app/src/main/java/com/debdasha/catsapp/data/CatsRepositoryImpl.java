@@ -1,16 +1,17 @@
 package com.debdasha.catsapp.data;
 
-import java.util.List;
-
-import io.reactivex.Completable;
-import io.reactivex.Maybe;
-import io.reactivex.Single;
 import com.debdasha.catsapp.data.db.DbSource;
 import com.debdasha.catsapp.data.mappers.CatMapper;
 import com.debdasha.catsapp.data.remote.interfaces.MemorySource;
 import com.debdasha.catsapp.data.remote.interfaces.NetworkSource;
 import com.debdasha.catsapp.domain.CatRepository;
 import com.debdasha.catsapp.domain.models.Cat;
+
+import java.util.List;
+
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 public class CatsRepositoryImpl implements CatRepository {
     private final NetworkSource networkSource;
@@ -40,9 +41,9 @@ public class CatsRepositoryImpl implements CatRepository {
         return memorySource
                 .getCats()
                 .flatMapMaybe(remotes -> {
-                    if (remotes.isEmpty()){
+                    if (remotes.isEmpty()) {
                         return getNextCats();
-                    }else{
+                    } else {
                         return Maybe.just(remotes)
                                 .flattenAsObservable(catRemotes -> catRemotes)
                                 .map(catRemote -> catMapper.remoteToDomain(catRemote))

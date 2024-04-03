@@ -1,23 +1,20 @@
 package com.debdasha.catsapp.presentation.mappers;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.debdasha.catsapp.common.Utils;
 import com.debdasha.catsapp.domain.models.Cat;
 import com.debdasha.catsapp.presentation.misc.ViewUtils;
 import com.debdasha.catsapp.presentation.models.CatUI;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CatUIMapper {
     private final ViewUtils viewUtils;
-    private final Utils utils;
 
-    public CatUIMapper(ViewUtils viewUtils, Utils utils) {
+    public CatUIMapper(ViewUtils viewUtils) {
         this.viewUtils = viewUtils;
-        this.utils = utils;
     }
 
-    public CatUI domainToUI(Cat cat){
+    public CatUI domainToUI(Cat cat) {
         CatUI catUI = new CatUI();
         catUI.setServerId(cat.getServerId());
         catUI.setUrl(cat.getUrl());
@@ -25,12 +22,12 @@ public class CatUIMapper {
         catUI.setImageWidth(cat.getImageWidth());
         int screenWidth = viewUtils.getScreenWidth();
         catUI.setScreenImageWidth(screenWidth);
-        catUI.setScreenImageHeight(utils.countAspectRatioHeight(screenWidth,
+        catUI.setScreenImageHeight(viewUtils.countAspectRatioHeight(screenWidth,
                 catUI.getImageHeight(), catUI.getImageWidth()));
         return catUI;
     }
 
-    public Cat uiToDomain(CatUI catUI){
+    public Cat uiToDomain(CatUI catUI) {
         Cat cat = new Cat();
         cat.setServerId(catUI.getServerId());
         cat.setUrl(catUI.getUrl());
@@ -39,9 +36,9 @@ public class CatUIMapper {
         return cat;
     }
 
-    public List<CatUI> domainToUI(List<Cat> cats){
+    public List<CatUI> domainToUI(List<Cat> cats) {
         List<CatUI> result = new ArrayList<>();
-        for (Cat cat: cats){
+        for (Cat cat : cats) {
             result.add(domainToUI(cat));
         }
         return result;

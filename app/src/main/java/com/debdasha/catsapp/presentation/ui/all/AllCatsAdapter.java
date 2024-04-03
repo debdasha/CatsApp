@@ -6,21 +6,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.debdasha.catsapp.R;
 import com.debdasha.catsapp.presentation.models.CatUI;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AllCatsAdapter extends
         RecyclerView.Adapter<AllCatsViewHolder> {
 
     private static final String TAG = AllCatsAdapter.class.getSimpleName();
-    private Activity context;
+    private final Activity context;
     @NonNull
-    private List<CatUI> cats = new ArrayList<>();
+    private final List<CatUI> cats = new ArrayList<>();
     @NonNull
     private OnLikeClickListener onLikeClickListener;
     @NonNull
@@ -47,7 +48,7 @@ public class AllCatsAdapter extends
     @Override
     public void onBindViewHolder(AllCatsViewHolder holder, int position) {
         CatUI item = cats.get(position);
-        holder.bind(context,item, onLikeClickListener, onDownloadClickListener);
+        holder.bind(context, item, onLikeClickListener, onDownloadClickListener);
     }
 
 

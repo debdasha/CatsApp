@@ -1,18 +1,19 @@
 package com.debdasha.catsapp.di.modules;
 
+import androidx.annotation.NonNull;
+
+import com.debdasha.catsapp.data.remote.RequestInterceptor;
+import com.debdasha.catsapp.data.remote.interfaces.CatRemoteInterface;
+import com.debdasha.catsapp.di.scopes.PerApplication;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import com.debdasha.catsapp.data.remote.RequestInterceptor;
-import com.debdasha.catsapp.data.remote.interfaces.CatRemoteInterface;
-import com.debdasha.catsapp.di.scopes.PerApplication;
 
 @Module
 public class NetworkModule {

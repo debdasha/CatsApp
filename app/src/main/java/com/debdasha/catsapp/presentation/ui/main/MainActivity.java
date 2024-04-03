@@ -4,30 +4,23 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.debdasha.catsapp.databinding.ActivityMainBinding;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
 import com.debdasha.catsapp.CatApp;
 import com.debdasha.catsapp.R;
+import com.debdasha.catsapp.databinding.ActivityMainBinding;
 import com.debdasha.catsapp.di.components.UIComponent;
 import com.debdasha.catsapp.di.modules.UIModule;
 import com.debdasha.catsapp.presentation.ui.BaseActivity;
 import com.debdasha.catsapp.presentation.ui.all.AllCatsFragment;
 import com.debdasha.catsapp.presentation.ui.favorites.FavoriteCatsFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends BaseActivity {
 
-    private ActivityMainBinding binding;
-
-    public UIComponent getUIComponent() {
-        return mControllerComponent;
-    }
-
     private UIComponent mControllerComponent;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+    private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @SuppressLint("NonConstantResourceId")
@@ -45,20 +38,28 @@ public class MainActivity extends BaseActivity {
         }
     };
 
+    public UIComponent getUIComponent() {
+        return mControllerComponent;
+    }
+
     private void navigateAllCats() {
         Fragment fragment = getFragmentByTag(AllCatsFragment.TAG);
-        if (fragment == null){
-            showFragmentWithTag(new AllCatsFragment(), AllCatsFragment.TAG, true);
-        }else{
+        if (fragment == null) {
+            AllCatsFragment baseFragment = new AllCatsFragment();
+            getUIComponent().inject(baseFragment);
+            showFragmentWithTag(baseFragment, AllCatsFragment.TAG, true);
+        } else {
             showFragmentWithTag(fragment, AllCatsFragment.TAG, false);
         }
     }
 
     private void navigateFavorites() {
         Fragment fragment = getFragmentByTag(FavoriteCatsFragment.TAG);
-        if (fragment == null){
-            showFragmentWithTag(new FavoriteCatsFragment(), FavoriteCatsFragment.TAG, true);
-        }else{
+        if (fragment == null) {
+            FavoriteCatsFragment baseFragment = new FavoriteCatsFragment();
+            getUIComponent().inject(baseFragment);
+            showFragmentWithTag(baseFragment, FavoriteCatsFragment.TAG, true);
+        } else {
             showFragmentWithTag(fragment, FavoriteCatsFragment.TAG, false);
         }
     }
@@ -66,12 +67,14 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        com.debdasha.catsapp.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getUiComponent().inject(this);
         if (savedInstanceState == null) {
-            showFragmentWithTag(new AllCatsFragment(), AllCatsFragment.class.getSimpleName(), true);
+            AllCatsFragment baseFragment = new AllCatsFragment();
+            getUIComponent().inject(baseFragment);
+            showFragmentWithTag(baseFragment, AllCatsFragment.class.getSimpleName(), true);
         }
     }
 
@@ -85,7 +88,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         mControllerComponent = null;
         super.onDestroy();
     }

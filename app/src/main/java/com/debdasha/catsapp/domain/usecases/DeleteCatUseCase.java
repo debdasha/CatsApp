@@ -1,17 +1,18 @@
 package com.debdasha.catsapp.domain.usecases;
 
-import io.reactivex.Completable;
 import com.debdasha.catsapp.domain.CatRepository;
 import com.debdasha.catsapp.domain.models.Cat;
 
+import io.reactivex.Completable;
+
 public class DeleteCatUseCase {
-    private CatRepository catRepository;
+    private final CatRepository catRepository;
 
     public DeleteCatUseCase(CatRepository catRepository) {
         this.catRepository = catRepository;
     }
 
-    public Completable deleteCat(Cat cat){
+    public Completable deleteCat(Cat cat) {
         return catRepository.deleteCat(cat);
     }
 }

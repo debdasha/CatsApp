@@ -1,8 +1,9 @@
 package com.debdasha.catsapp.domain.usecases;
 
-import io.reactivex.Completable;
 import com.debdasha.catsapp.domain.CatRepository;
 import com.debdasha.catsapp.domain.models.Cat;
+
+import io.reactivex.Completable;
 
 public class AddCatUseCase {
     private final CatRepository catRepository;
@@ -11,7 +12,7 @@ public class AddCatUseCase {
         this.catRepository = catRepository;
     }
 
-    public Completable addCat(Cat cat){
+    public Completable addCat(Cat cat) {
         return catRepository.addCat(cat);
     }
 }

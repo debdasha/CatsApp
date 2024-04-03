@@ -3,8 +3,7 @@ package com.debdasha.catsapp.di.modules;
 import android.app.DownloadManager;
 
 import androidx.annotation.NonNull;
-import dagger.Module;
-import dagger.Provides;
+
 import com.debdasha.catsapp.common.AndroidUtils;
 import com.debdasha.catsapp.data.CatsRepositoryImpl;
 import com.debdasha.catsapp.data.db.CatDao;
@@ -21,6 +20,9 @@ import com.debdasha.catsapp.data.remote.interfaces.NetworkSource;
 import com.debdasha.catsapp.di.scopes.PerApplication;
 import com.debdasha.catsapp.domain.CatRepository;
 
+import dagger.Module;
+import dagger.Provides;
+
 @Module(includes = {DatabaseModule.class, NetworkModule.class, DownloadManagerModule.class})
 public class DataModule {
     @NonNull
@@ -28,7 +30,7 @@ public class DataModule {
     @Provides
     NetworkSource provideNetworkSource(CatRemoteInterface catRemoteInterface, DownloadManager downloadManager,
                                        AndroidUtils androidUtils) {
-        return new NetworkSourceImpl(catRemoteInterface, downloadManager,androidUtils);
+        return new NetworkSourceImpl(catRemoteInterface, downloadManager, androidUtils);
     }
 
     @NonNull

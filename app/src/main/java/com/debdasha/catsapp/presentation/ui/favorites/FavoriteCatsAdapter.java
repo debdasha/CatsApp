@@ -6,13 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.debdasha.catsapp.R;
 import com.debdasha.catsapp.presentation.models.CatUI;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FavoriteCatsAdapter extends
         RecyclerView.Adapter<FavoriteCatsViewHolder> {
@@ -48,7 +49,7 @@ public class FavoriteCatsAdapter extends
         notifyDataSetChanged();
     }
 
-    public void deleteData(CatUI catUI){
+    public void deleteData(CatUI catUI) {
         list.remove(catUI);
         notifyDataSetChanged();
     }

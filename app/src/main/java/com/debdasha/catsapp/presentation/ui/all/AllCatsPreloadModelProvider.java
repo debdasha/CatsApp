@@ -4,23 +4,23 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.bumptech.glide.ListPreloader;
-import com.bumptech.glide.RequestBuilder;
-
-import java.util.Collections;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+
+import com.bumptech.glide.ListPreloader;
+import com.bumptech.glide.RequestBuilder;
 import com.debdasha.catsapp.presentation.GlideApp;
 import com.debdasha.catsapp.presentation.models.CatUI;
+
+import java.util.Collections;
+import java.util.List;
 
 public class AllCatsPreloadModelProvider implements ListPreloader.PreloadModelProvider<CatUI> {
     private List<CatUI> catUIS;
     private Activity context;
 
-    public AllCatsPreloadModelProvider(Activity context, List<CatUI> catUIS){
+    public AllCatsPreloadModelProvider(Activity context, List<CatUI> catUIS) {
         this.catUIS = catUIS;
         this.context = context;
     }

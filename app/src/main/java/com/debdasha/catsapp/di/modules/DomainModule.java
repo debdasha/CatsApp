@@ -1,8 +1,7 @@
 package com.debdasha.catsapp.di.modules;
 
 import androidx.annotation.NonNull;
-import dagger.Module;
-import dagger.Provides;
+
 import com.debdasha.catsapp.di.scopes.PerApplication;
 import com.debdasha.catsapp.domain.CatRepository;
 import com.debdasha.catsapp.domain.usecases.AddCatUseCase;
@@ -12,6 +11,9 @@ import com.debdasha.catsapp.domain.usecases.GetAllCatsUseCase;
 import com.debdasha.catsapp.domain.usecases.GetFavoriteCatsUseCase;
 import com.debdasha.catsapp.domain.usecases.GetNextCatsUseCase;
 import com.debdasha.catsapp.domain.usecases.RefreshCatsUseCase;
+
+import dagger.Module;
+import dagger.Provides;
 
 @Module
 public class DomainModule {

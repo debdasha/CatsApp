@@ -3,12 +3,13 @@ package com.debdasha.catsapp.presentation.ui;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
+
 import com.debdasha.catsapp.R;
-import com.debdasha.catsapp.presentation.misc.MVPMoxyActivity;
 
 
-public class BaseActivity extends MVPMoxyActivity {
+public class BaseActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,7 @@ public class BaseActivity extends MVPMoxyActivity {
         fragmentTransaction.commitNowAllowingStateLoss();
     }
 
-    public Fragment getFragmentByTag(String tag){
+    public Fragment getFragmentByTag(String tag) {
         return getSupportFragmentManager().findFragmentByTag(tag);
     }
 }

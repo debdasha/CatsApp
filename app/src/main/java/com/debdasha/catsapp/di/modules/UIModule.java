@@ -3,19 +3,20 @@ package com.debdasha.catsapp.di.modules;
 import android.app.Activity;
 import android.content.Context;
 
-import javax.inject.Named;
-
 import androidx.annotation.NonNull;
-import dagger.Module;
-import dagger.Provides;
-import com.debdasha.catsapp.common.Utils;
+
 import com.debdasha.catsapp.di.scopes.PerActivity;
 import com.debdasha.catsapp.presentation.mappers.CatUIMapper;
 import com.debdasha.catsapp.presentation.misc.ViewUtils;
 
+import javax.inject.Named;
+
+import dagger.Module;
+import dagger.Provides;
+
 @Module
 public class UIModule {
-    private Activity activity;
+    private final Activity activity;
 
     public UIModule(android.app.Activity activity) {
         this.activity = activity;
@@ -36,15 +37,15 @@ public class UIModule {
 
     @Provides
     @PerActivity
-    ViewUtils provideViewUtils(){
+    ViewUtils provideViewUtils() {
         return new ViewUtils(activity);
     }
 
     @NonNull
     @PerActivity
     @Provides
-    CatUIMapper provideCatUIMapper(ViewUtils viewUtils, Utils utils) {
-        return new CatUIMapper(viewUtils, utils);
+    CatUIMapper provideCatUIMapper(ViewUtils viewUtils) {
+        return new CatUIMapper(viewUtils);
     }
 
 }

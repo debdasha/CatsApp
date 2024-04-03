@@ -5,17 +5,18 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+
 import com.debdasha.catsapp.R;
+import com.debdasha.catsapp.presentation.GlideApp;
+import com.debdasha.catsapp.presentation.models.CatUI;
 import com.jakewharton.rxbinding3.view.RxView;
 
 import java.util.concurrent.TimeUnit;
 
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import com.debdasha.catsapp.presentation.GlideApp;
-import com.debdasha.catsapp.presentation.models.CatUI;
 
 public class AllCatsViewHolder extends RecyclerView.ViewHolder {
 
@@ -29,13 +30,14 @@ public class AllCatsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(Activity context, final CatUI model, AllCatsAdapter.OnLikeClickListener onLikeClickListener,
-                     AllCatsAdapter.OnDownloadClickListener onDownloadClickListener ) {
+                     AllCatsAdapter.OnDownloadClickListener onDownloadClickListener) {
         RxView.clicks(ibDownload)
                 .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(unit -> onDownloadClickListener.onDownloadClick(model));
         RxView.clicks(ibLike)
                 .debounce(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(unit -> onLikeClickListener.onLikeClick(model));
+
         ivCat.getLayoutParams().height = model.getScreenImageHeight();
         showWithGlide(context, model);
     }

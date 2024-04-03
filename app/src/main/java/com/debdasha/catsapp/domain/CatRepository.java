@@ -1,11 +1,12 @@
 package com.debdasha.catsapp.domain;
 
+import com.debdasha.catsapp.domain.models.Cat;
+
 import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
-import com.debdasha.catsapp.domain.models.Cat;
 
 public interface CatRepository {
     Completable deleteCat(Cat cat);
